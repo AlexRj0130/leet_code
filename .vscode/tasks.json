@@ -1,0 +1,30 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "Clang++ Build",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++11",
+                "-stdlib=libc++",  // 使用 LLVM 标准库
+                "-fcolor-diagnostics",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/a.out"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "调试器生成的任务。"
+        }
+    ],
+    "version": "2.0.0"
+}
