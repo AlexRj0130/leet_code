@@ -33,13 +33,19 @@ public:
         }
 
         ListNode *pPre = nullptr, *pTarget = head, *pCur = head;
-        while (pCur != nullptr) {
+        while (pCur -> next != nullptr) {
             pCur = pCur -> next;
             if (n > 0 && (--n > 0)) {
             } else {
                 pPre = pTarget;
                 pTarget = pTarget -> next;
             }
+        }
+
+        if (pPre != nullptr) {
+            pPre -> next = pTarget -> next;
+        } else if (n == 1) {
+            head = head -> next;
         }
 
         return head;
