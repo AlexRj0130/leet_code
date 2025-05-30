@@ -5,7 +5,7 @@
             "label": "Clang++ Build",
             "command": "/usr/bin/clang++",
             "args": [
-                "-std=c++11",
+                "-std=c++20",
                 "-stdlib=libc++",  // 使用 LLVM 标准库
                 "-fcolor-diagnostics",
                 "-g",
