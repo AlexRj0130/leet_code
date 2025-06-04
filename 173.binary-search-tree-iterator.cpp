@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <stack>
 
 using namespace std;
 
@@ -34,90 +35,28 @@ struct TreeNode {
 class BSTIterator {
 public:
     BSTIterator(TreeNode* root) {
-        initFlag = true;
-        initReadNode(root);
+        pushLeftNodeAll(root);
     }
     
     int next() {
-        if (initFlag) {
-            initFlag = false;
-        } else {
-            moveNext(readRecord, curIndex);
-        }
-        return readRecord[curIndex]->val;
+        auto nodeTmp = nodeStack.top();
+        nodeStack.pop();
+        pushLeftNodeAll(nodeTmp->right);
+        return nodeTmp->val;
     }
     
     bool hasNext() {
-        if (curIndex == 0) {
-            if (initFlag) {
-                return true;
-            }
-            if (readRecord[curIndex]->right == nullptr) {
-                return false;
-            }
-            return true;
-        }
-
-        if (curIndex > 0) {
-            if (readRecord[curIndex]->right != nullptr) {
-                return true;
-            }
-        }
-
-        if (readRecord[curIndex - 1]->left == readRecord[curIndex]) {
-            return true;
-        }
-
-        int curIndexTmp = curIndex;
-        while (curIndexTmp > 0 && readRecord[curIndexTmp - 1]->right == readRecord[curIndexTmp]) {
-            --curIndexTmp;
-        }
-        if (curIndexTmp == 0) {
-            return false;
-        }
-
-        return true;
+        return !nodeStack.empty();
     }
 
 private:
-    void moveNext(vector<TreeNode *> &readRecord, int &curIndex) {
-        if (readRecord[curIndex]->right != nullptr) {
-            initReadNode(readRecord[curIndex]->right);
-            return;
+    void pushLeftNodeAll(TreeNode* root) {
+        for (; root != nullptr; root = root->left) {
+            nodeStack.push(root);
         }
-        
-        if (curIndex == 0) {
-            return;
-        }
-
-        while (curIndex > 0 && readRecord[curIndex - 1] -> right == readRecord[curIndex]) {
-            --curIndex;
-        }
-        --curIndex;
-    }
-
-    void initReadNode(TreeNode* root) {
-        if (root == nullptr) {
-            return;
-        }
-
-        ++curIndex;
-        if (curIndex >= readRecord.size()) {
-            readRecord.push_back(root);
-        } else {
-            readRecord[curIndex] = root;
-        }
-
-        if (root -> left == nullptr) {
-            return;
-        }
-
-        initReadNode(root -> left);
     }
 private:
-    vector<TreeNode *> readRecord;
-    int curIndex{-1};
-    int initFlag = false;
+    stack<TreeNode *> nodeStack;
 };
 
 /**
