@@ -51,8 +51,8 @@ private:
 
     int treeMethod(int n) {
         mDpVec = vector<vector<int>>(n+2, vector<int>(n+2, 0)); 
-        for (int i = 0; i <= n; ++i) {
-            mDpVec[i][i] = i;
+        for (int i = 0; i < n; ++i) {
+            mDpVec[i][i+1] = i;
         }
 
         for (int i = n; i >= 1; --i) {

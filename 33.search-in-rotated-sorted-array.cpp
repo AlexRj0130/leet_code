@@ -1,6 +1,4 @@
 #include <vector>
-#include <iostream>
-
 using namespace std;
 
 /*
@@ -13,40 +11,34 @@ using namespace std;
 class Solution {
 public:
     int search(vector<int>& nums, int target) {
-        int left = 0, right = nums.size() - 1;
-        while (left <= right) {
-            int mid = (left + right) / 2;
-            if (nums[mid] == target) {
-                return mid;
-            }
-            
-            if (nums[left] <= nums[mid]) {
-                if (nums[left] <= target && nums[mid] > target) {
-                    right = mid - 1;
-                } else {
-                    left = mid + 1;
-                }
-            } else {
-                if (nums[mid] < target && nums[right] >= target) {
-                    left = mid + 1;
-                } else {
-                    right = mid - 1;
-                }
-            }
+        return binSearch(nums, target, 0, nums.size() - 1); 
+    }
+
+private:
+    int binSearch(const vector<int>& nums, int target, int start, int end) {
+        if (nums.size() <= 0 || start > end) {
+            return -1;
         }
 
-        return -1;
-    }
-private:
-    int binSearch(vector<int>& nums, int target, bool searchLeft) {
-        
+        if (start == end) {
+            return nums[start] == target ? start : -1;
+        }
+
+        auto mid = (start + end) / 2;
+
+
+        if (nums[start] <= nums[mid]) {
+            if (target >= nums[start] && target <= nums[mid]) {
+                return binSearch(nums, target, start, mid);
+            }
+            return binSearch(nums, target, mid+1, end);
+        } else {
+            if (target >= nums[mid + 1] && target <= nums[end]) {
+                return binSearch(nums, target, mid + 1, end);
+            }
+            return binSearch(nums, target, start, mid);
+        }
     }
 };
 // @lc code=end
 
-int main() {
-    Solution sol;
-    vector<int> vec{3,1};
-    auto res = sol.search(vec, 1);
-    std::cout << "res = " << res;
-}
