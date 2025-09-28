@@ -14,45 +14,39 @@ using namespace std;
 class Solution {
 public:
     int minDistance(string word1, string word2) {
-        init(word1, word2);
-        for (int i = 1; i <= mSize1; ++i) {
-            for (int j = 1; j <= mSize2; ++j) {
+        initDp(word1.size(), word2.size());
+        stateTransfer(word1, word2);
+        return dp[word1.size()][word2.size()];
+    }
+private:
+    void stateTransfer(const string &word1, const string &word2) {
+        auto rowSize = word1.size();
+        auto colSize = word2.size();
+
+        for (int i = 1; i <= rowSize; ++i) {
+            for (int j = 1; j <= colSize; ++j) {
                 if (word1[i-1] == word2[j-1]) {
-                    mDpVec[i][j] = mDpVec[i-1][j-1];
+                    dp[i][j] = dp[i-1][j-1];
                     continue;
                 }
-
-                mDpVec[i][j] = min(min(mDpVec[i-1][j-1], mDpVec[i-1][j]), mDpVec[i][j-1]) + 1;
+                dp[i][j] = min(dp[i-1][j], min(dp[i][j-1], dp[i-1][j-1])) + 1;
             }
         }
-        return mDpVec[mSize1][mSize2];
     }
-private:
-    void init(const string &word1, const string &word2) {
-        mSize1 = word1.size();
-        mSize2 = word2.size();
 
-        mDpVec = vector<vector<int>>(mSize1 + 1, vector<int>(mSize2 + 1, 0));
-
-        for (int i = 1; i <= mSize1; ++i) {
-            mDpVec[i][0] = i;
+    void initDp(int rowSize, int colSize) {
+        dp = vector<vector<int>>(rowSize + 1, vector<int>(colSize + 1, 0));
+        for (int i = 0; i <= rowSize; ++i) {
+            dp[i][0] = i;
         }
 
-        for (int j = 1; j <= mSize2; ++j) {
-            mDpVec[0][j] = j;
+        for (int j = 0; j <= colSize; ++j) {
+            dp[0][j] = j;
         }
     }
 
 private:
-    int mSize1{0};
-    int mSize2{0};
-    vector<vector<int>> mDpVec;
+    vector<vector<int>> dp;
 };
 // @lc code=end
-
-int main() {
-    Solution sol;
-    auto res = sol.minDistance("horse", "ros");
-    return 0;
-}
 
