@@ -1,5 +1,5 @@
-#include <vector>
 #include <queue>
+#include <vector>
 
 using namespace std;
 
@@ -13,21 +13,20 @@ using namespace std;
 class Solution {
 public:
     int findKthLargest(vector<int>& nums, int k) {
-        for (const auto & val : nums) {
-            pQueue.push(val);
+        if (nums.size() < k) {
+            return 0;
         } 
 
-        for (--k; k >= 0; --k) {
-            if (k == 0) {
-                return pQueue.top();
-            }
-            pQueue.pop();
+        priority_queue<int> pQueue;
+        for (int i = 0; i < nums.size(); ++i) {
+            pQueue.push(nums[i]);
         }
 
-        return -1;
+        while(--k > 0) {
+            pQueue.pop();
+        }
+        return pQueue.top();
     }
-private:
-    std::priority_queue<int> pQueue;
 };
 // @lc code=end
 
