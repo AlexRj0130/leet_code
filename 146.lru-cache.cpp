@@ -1,4 +1,4 @@
-#include <unordered_map>
+#include <map>
 #include <iostream>
 
 using namespace std;
@@ -10,153 +10,133 @@ using namespace std;
  */
 
 // @lc code=start
-struct AListNode {
-    AListNode(int key, int val) : AListNode(key, val, nullptr, nullptr) {}
-    AListNode(int key, int val, AListNode *pre, AListNode *next) : key(key), val(val), pre(pre), next(next) {}
-    int key;
-    int val;
-    AListNode *pre; 
-    AListNode *next;
+struct CacheNode {
+    int mKey;
+    int mVal;
+    CacheNode *mpPre, *mpNext; 
+    CacheNode(int key, int val) {
+        mKey = key;
+        mVal = val;
+        mpPre = nullptr;
+        mpNext = nullptr;
+    } 
+    CacheNode(int key, int val, CacheNode * pPre, CacheNode * pNext) {
+        mKey = key;
+        mVal = val;
+        mpPre = pPre;
+        mpNext = pNext;
+    }
 };
 
 class LRUCache {
 public:
     LRUCache(int capacity) {
-        if (capacity <= 0) {
-            return;
-        }
-        mMaxCap = capacity; 
+        mCapacity = capacity; 
+        mMap = map<int, CacheNode*>();
+        mpHead = nullptr;
+        mpRear = nullptr;
     }
+
+    
     
     int get(int key) {
-        if (!mKey2Map.contains(key)) {
-            return -1;
-        }
-
-        auto node = mKey2Map[key];
-        auto val = node->val;
-        if (!isHeadNode(node)) {
-            removeNode(node);
-            insertNodeHead(node);
-        }
-        return val;
+        if (mMap.contains(key)) {
+            auto node = mMap.at(key);
+            setNodeHead(node);
+            return node->mVal;
+        } 
+        return -1;
     }
     
     void put(int key, int value) {
-        if (mKey2Map.contains(key)) {
-            auto node = mKey2Map[key];
-            node -> val = value;
-            if (!isHeadNode(node)) {
-                removeNode(node);
-                insertNodeHead(node); 
-            }
+        if (mMap.contains(key)) {
+            auto node = mMap.at(key);
+            node->mVal = value;
+            setNodeHead(node);
             return;
+        } 
+
+        CacheNode * newNode = nullptr;
+        if (mCapacity <= mMap.size()) {
+            mMap.erase(mpRear->mKey);
+            newNode = removeNode(mpRear);
+            newNode->mKey = key;
+            newNode->mVal = value;
+        } else {
+            newNode = new CacheNode(key, value);
         }
 
-        if (mCurSize < mMaxCap) {
-            insertNodeHead(key, value);
-            return;
-        }
+        setNodeHead(newNode);
+        mMap[key] = newNode;
+    }
 
-        auto node = removeNode(mListRear);
-        node->key = key;
-        node->val = value;
-        insertNodeHead(node);
+    void getAndCout(int key) {
+        cout << "key = " << key << ", val = " << get(key) << endl;
     }
 
 private:
-    bool isHeadNode(AListNode *node) {
-        return node == mListHead;
-    }
-
-    AListNode * removeNode(int key) {
-        if (!mKey2Map.contains(key)) {
-            return nullptr;
+    void setNodeHead(CacheNode *node) {
+        if (node == nullptr) {
+            return;
         }
-        return removeNode(mKey2Map[key]);
+
+        if (node == mpHead) {
+            return;
+        }
+
+        removeNode(node);
+
+        if (mpHead == nullptr) {
+            mpRear = mpHead = node;
+            return;
+        }
+
+        node->mpNext = mpHead;
+        mpHead->mpPre = node;
+        mpHead = node;
     }
 
-    AListNode * removeNode(AListNode *node) { // 移除指定节点
+    CacheNode * removeNode(CacheNode *node) {
         if (node == nullptr) {
             return nullptr;
         }
 
-        if (mKey2Map.contains(node->key)) {
-            mKey2Map.erase(node->key);
-        }
+        if (mpHead == mpRear) {
+            if (mpHead == nullptr) {
+                return nullptr;
+            }
 
-        if (node == mListHead) {
-            if (node == mListRear) {
-                mListHead = nullptr;
-                mListRear = nullptr;
-                mCurSize = 0;
-
-                node->pre = nullptr;
-                node->next = nullptr;
+            if (node==mpHead) {
+                mpHead = mpRear = nullptr; 
                 return node;
             }
 
-            mListHead = mListHead->next;
-            mListHead->pre = nullptr;
-            --mCurSize;
-
-            node->pre = nullptr;
-            node->next = nullptr;
             return node;
         }
 
-        if (node == mListRear) {
-            mListRear = mListRear->pre;
-            mListRear->next = nullptr;
-            --mCurSize;
-
-            node->pre = nullptr;
-            node->next = nullptr;
-            return node;
+        if (node == mpHead) {
+            mpHead = mpHead->mpNext;
+            mpHead->mpPre = nullptr;
+        } else if (node == mpRear) {
+            mpRear = mpRear->mpPre;
+            mpRear->mpNext = nullptr;
+        } else {
+            if (node->mpPre != nullptr) {
+                node->mpPre->mpNext = node->mpNext;
+            }
+            if (node->mpNext != nullptr) {
+                node->mpNext->mpPre = node->mpPre;
+            }
         }
 
-        node->pre->next = node->next;
-        node->next->pre = node->pre;
-        --mCurSize;
-
-        node->pre = nullptr;
-        node->next = nullptr;
+        node->mpPre = node->mpNext = nullptr;
         return node;
     }
 
-    void insertNodeHead(int key, int val) {
-        insertNodeHead(new AListNode(key, val));
-    }
-
-    void insertNodeHead(AListNode *node) { // 将节点插入头部
-        if (node == nullptr) {
-            return;
-        }
-
-        mKey2Map[node->key] = node;
-
-        if (mListHead == nullptr) {
-            node->pre = nullptr;
-            node->next = nullptr;
-            mListHead = mListRear = node;
-            ++mCurSize;
-            return;
-        }
-
-        node->next = mListHead;
-        node->pre = nullptr;
-        mListHead->pre = node;
-        mListHead = node;
-        ++mCurSize;
-        return;
-    }
-
 private:
-    AListNode *mListHead{nullptr};
-    AListNode *mListRear{nullptr};
-    unordered_map<int, AListNode*> mKey2Map; 
-    int mCurSize{0};
-    int mMaxCap{1};
+    int mCapacity;
+    map<int, CacheNode*> mMap;
+    CacheNode *mpHead, *mpRear;
 };
 
 /**
@@ -168,12 +148,17 @@ private:
 // @lc code=end
 
 int main() {
-    LRUCache cache(2);
-    cache.put(2, 1);
-    cache.put(1, 2);
-    cache.put(2, 3);
-    cache.put(4, 1);
-    cout << "get = " << cache.get(1) << endl; // = 1
-    cout << "get = " << cache.get(2) << endl; // = -1
+    auto cache = LRUCache(3);
+    cache.put(1, 1);
+    cache.put(2, 2);
+    cache.put(3, 3);
+    cache.put(4, 4);
+    cache.getAndCout(4);
+    cache.getAndCout(3);
+    cache.getAndCout(2);
+    cache.getAndCout(1);
+    cache.put(5, 5);
+    cache.getAndCout(1);
+    cache.getAndCout(2);
     return 0;
 }
