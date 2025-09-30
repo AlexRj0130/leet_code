@@ -1,8 +1,14 @@
+#include <queue>
 #include <vector>
 #include <stack>
-#include <queue>
 
 using namespace std;
+
+/*
+ * @lc app=leetcode id=103 lang=cpp
+ *
+ * [103] Binary Tree Zigzag Level Order Traversal
+ */
 
 struct TreeNode {
     int val;
@@ -12,12 +18,6 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
-
-/*
- * @lc app=leetcode id=103 lang=cpp
- *
- * [103] Binary Tree Zigzag Level Order Traversal
- */
 
 // @lc code=start
 /**
@@ -31,49 +31,56 @@ struct TreeNode {
  *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
+
+struct QueueNode {
+    TreeNode * node; 
+    int level;
+    QueueNode(TreeNode *pNode, int nodeLevel) : node(pNode), level(nodeLevel) {}
+};
+
 class Solution {
 public:
     vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
-        vector<vector<int>> res;
         if (root == nullptr) {
-            return res;
+            return {};
         }
 
-        queue<TreeNode*> queueTmp;
-        stack<TreeNode*> stackTmp;
+        vector<vector<int>> res;
+        vector<int> resItem;
 
-        stackTmp.push(root);
-        int queueLevel = 0;
-        
-        while(queueTmp.empty() == false || stackTmp.empty() == false) {
-            if (queueTmp.empty()) {
-                while(!stackTmp.empty()) {
-                    queueTmp.push(stackTmp.top());
-                    stackTmp.pop();
+        queue<QueueNode> readQueue; 
+        readQueue.push(QueueNode(root, 0));
+        int curLevel = 0;
+
+        stack<QueueNode> tmpStack;
+        while(!readQueue.empty()) {
+            auto readNode = readQueue.front();
+            resItem.push_back(readNode.node->val);
+            readQueue.pop();
+
+            if (readNode.level % 2 == 0) {
+                if (readNode.node->left != nullptr) {
+                    tmpStack.push(QueueNode(readNode.node->left, readNode.level + 1));
                 }
-
-                res.push_back(vector<int>{});
-                ++queueLevel;
+                if (readNode.node->right != nullptr) {
+                     tmpStack.push(QueueNode(readNode.node->right, readNode.level + 1)); 
+                }
+            } else {
+                if (readNode.node->right != nullptr) {
+                     tmpStack.push(QueueNode(readNode.node->right, readNode.level + 1)); 
+                }
+                if (readNode.node->left != nullptr) {
+                    tmpStack.push(QueueNode(readNode.node->left, readNode.level + 1));
+                }
             }
 
-            auto qNode = queueTmp.front();
-            queueTmp.pop();
-
-            res[queueLevel - 1].push_back(qNode->val);
-            if (queueLevel % 2) {
-                if (qNode->left) {
-                    stackTmp.push(qNode->left);
+            if (readQueue.empty()) {
+                while(!tmpStack.empty()) {
+                    readQueue.push(tmpStack.top());
+                    tmpStack.pop();
                 }
-                if (qNode->right) {
-                    stackTmp.push(qNode->right);
-                } 
-            } else {
-                if (qNode->right) {
-                    stackTmp.push(qNode->right);
-                } 
-                if (qNode->left) {
-                    stackTmp.push(qNode->left);
-                }
+                res.push_back(resItem);
+                resItem.clear();
             }
         }
 
