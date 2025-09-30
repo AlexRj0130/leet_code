@@ -1,5 +1,4 @@
 #include <vector>
-#include <map>
 
 using namespace std;
 
@@ -17,58 +16,60 @@ public:
             return nums.size();
         } 
 
-        for (int i = 0; i < nums.size(); ++i) {
-            auto nextGT = findNextGT(nums[i]);
-            if (nextGT < 0) {
+        vector<int> record;
+        record.push_back(nums[0]);
+        for (int i = 1; i < nums.size(); ++i) {
+            if (nums[i] > record.back()) {
                 record.push_back(nums[i]);
+                continue;
+            } else if (nums[i] == record.back()) {
+                continue;
             } else {
-                record[nextGT] = nums[i];
+                int index = findFirstGE(record, nums[i]);
+                if (index != -1) {
+                    record[index] = nums[i];
+                }
             }
         }
 
         return record.size();
     }
+
 private:
-    int findNextGT(int target) {
-        if (record.size() == 0) {
-            return -1;
-        }
+    int findFirstGE(const vector<int>&record, int target) {
+        int start = 0, end = record.size() - 1;
+        while(start <= end) {
+            if (target <= record[start]) {
+                return start;
+            }
 
-        if (record[0] >= target) {
-            return 0;
-        }
+            if (target > record[end]) {
+                return -1;
+            }
 
-        if (record[record.size() - 1] < target) {
-            return -1;
-        }
-
-        int left = 0, right = record.size() - 1, mid;
-        while (left < right) {
-            int mid = (left + right) / 2;
-            if (record[mid] < target) {
-                if (record[mid + 1] >= target) {
-                    return mid + 1;
-                }
-                left = mid + 1;
+            int mid = (start + end) / 2;
+            if (target > record[mid]) {  // 说明 mid 左侧没有满足条件的结果，只能查找右侧
+                start = mid + 1;
+                continue;
             } else {
-                if (record[mid - 1] < target) {
+                end = mid - 1;
+                if (target > record[end]) {
                     return mid;
                 }
-                right = mid - 1;
+                continue;
             }
-        } 
+        }
 
-        return mid;
+        return -1;
     }
-
-private:
-    vector<int> record;
 };
 // @lc code=end
 
 int main() {
-    vector<int> data({1,3,6,7,9,4,10,5,6});
+    vector<int> nums{10,9,2,5,3,7,101,18};
     Solution sol;
-    sol.lengthOfLIS(data);
+
+    sol.lengthOfLIS(nums);
     return 0;
 }
+
