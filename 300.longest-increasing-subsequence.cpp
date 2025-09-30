@@ -22,45 +22,15 @@ public:
             if (nums[i] > record.back()) {
                 record.push_back(nums[i]);
                 continue;
-            } else if (nums[i] == record.back()) {
-                continue;
-            } else {
-                int index = findFirstGE(record, nums[i]);
-                if (index != -1) {
-                    record[index] = nums[i];
-                }
+            } 
+
+            auto firstGE = lower_bound(record.begin(), record.end(), nums[i]);
+            if (firstGE != record.end()) {
+                *firstGE = nums[i];
             }
         }
 
         return record.size();
-    }
-
-private:
-    int findFirstGE(const vector<int>&record, int target) {
-        int start = 0, end = record.size() - 1;
-        while(start <= end) {
-            if (target <= record[start]) {
-                return start;
-            }
-
-            if (target > record[end]) {
-                return -1;
-            }
-
-            int mid = (start + end) / 2;
-            if (target > record[mid]) {  // 说明 mid 左侧没有满足条件的结果，只能查找右侧
-                start = mid + 1;
-                continue;
-            } else {
-                end = mid - 1;
-                if (target > record[end]) {
-                    return mid;
-                }
-                continue;
-            }
-        }
-
-        return -1;
     }
 };
 // @lc code=end
