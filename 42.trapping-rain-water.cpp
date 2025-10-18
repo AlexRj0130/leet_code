@@ -16,19 +16,24 @@ public:
             return 0;
         } 
 
-        vector<int> leftMax(height.size(), 0);
-        vector<int> rightMax(height.size(), 0);
-        for (int i = 1, j = height.size() - 2; i < height.size(); ++i, --j) {
-            leftMax[i] = max(leftMax[i-1], height[i-1]);
-            rightMax[j] = max(rightMax[j + 1], height[j+1]);
-        }
-
-        int res = 0;
-        for (int i = 1; i < height.size() - 1; ++i) {
-            int minTmp = min(leftMax[i], rightMax[i]);
-            int resItem = minTmp - height[i];
-            if (resItem > 0) {
-                res += resItem;
+        int res = 0; 
+        int lMax = 0, rMax = 0;
+        int lIndex = 0, rIndex = height.size() - 1;
+        while (lIndex < rIndex) {
+            if (height[lIndex] < height[rIndex]) {
+                if (height[lIndex] >= lMax) {
+                    lMax = height[lIndex];
+                } else {
+                    res += (lMax - height[lIndex]);
+                }
+                ++lIndex;
+            } else {
+                if (height[rIndex] >= rMax) {
+                    rMax = height[rIndex];
+                } else {
+                    res += (rMax - height[rIndex]);
+                }
+                --rIndex;
             }
         }
 
