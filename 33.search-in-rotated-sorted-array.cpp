@@ -1,4 +1,5 @@
 #include <vector>
+
 using namespace std;
 
 /*
@@ -11,33 +12,58 @@ using namespace std;
 class Solution {
 public:
     int search(vector<int>& nums, int target) {
-        return binSearch(nums, target, 0, nums.size() - 1); 
-    }
-
-private:
-    int binSearch(const vector<int>& nums, int target, int start, int end) {
-        if (nums.size() <= 0 || start > end) {
+        if (nums.size() <= 0) {
             return -1;
-        }
+        } 
 
-        if (start == end) {
-            return nums[start] == target ? start : -1;
-        }
+        if (nums.size() == 1) {
+            return nums[0] == target ? 0 : -1;
+        } 
 
-        auto mid = (start + end) / 2;
-
-
-        if (nums[start] <= nums[mid]) {
-            if (target >= nums[start] && target <= nums[mid]) {
-                return binSearch(nums, target, start, mid);
+        int left = 0, right = nums.size() - 1;
+        while (left < right) {
+            int mid = (left + right) / 2;
+            if (nums[mid] == target) {
+                return mid;
             }
-            return binSearch(nums, target, mid+1, end);
-        } else {
-            if (target >= nums[mid + 1] && target <= nums[end]) {
-                return binSearch(nums, target, mid + 1, end);
+
+            if (nums[left] == target) {
+                return left;
             }
-            return binSearch(nums, target, start, mid);
+
+            if (nums[right] == target) {
+                return right;
+            }
+
+            if (nums[left] < nums[right]) {
+                if (target < nums[left] || target > nums[right]) {
+                    return -1;
+                }
+
+                if (target < nums[mid]) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+                continue;
+            } else {
+                if (nums[left] < nums[mid]) {
+                    if (target >= nums[left] && target <= nums[mid]) {
+                        right = mid;
+                        continue;
+                    }
+                    left = mid + 1;
+                } else {
+                    if (target >= nums[mid] && target <= nums[right]) {
+                        left = mid;
+                        continue;
+                    }
+                    right = mid - 1;
+                }
+            }
         }
+
+        return -1;
     }
 };
 // @lc code=end
