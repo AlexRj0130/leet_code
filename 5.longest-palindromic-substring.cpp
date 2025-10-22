@@ -13,50 +13,51 @@ using namespace std;
 class Solution {
 public:
     string longestPalindrome(string s) {
-        if (s.size() <= 0) {
-            return "";
-        } else if (s.size() <= 1) {
-            return s.substr(0, 1);
+        vector<vector<int>> record(s.size(), vector<int>(s.size(), 0));
+        for (int i = 0; i < s.size(); ++i) {
+            record[i][i] = 1;
         }
 
-        initDpVec(s);
-
-        int maxLong = 1;
-        string res = s.substr(0, 1);
-        for (int j = 1; j < s.size(); ++j) {
-            for (int i = j - 1; i >= 0; --i) {
-                dpVec[i][j] = ((j - i == 1 ) || dpVec[i + 1][j - 1]) && s[i] == s[j];
-                if (dpVec[i][j] && j - i + 1 > maxLong) {
-                    maxLong = j - i + 1;
-                    res = s.substr(i, maxLong);
+        int maxLen = 1, maxSta = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            for (int j = i+1; j < s.size(); ++j) {
+                if (isPalindrome(s, record, i, j)) {
+                    if (maxLen < (j - i + 1)) {
+                        maxLen = j - i + 1;
+                        maxSta = i;
+                    }
                 }
             }
         }
 
-        return res;
+        return s.substr(maxSta, maxLen);
     }
-private:
-    void initDpVec(const string &s) {
-        int size = s.size();
-        if (size <= 1) {
-            return;
+
+    bool isPalindrome(const string &s, vector<vector<int>> &record, int i, int j) {
+        if (record[i][j] == 1) {
+            return true;
+        } else if (record[i][j] == 2) {
+            return false;
         }
 
-        vector<bool> subVec(size, false);
-        dpVec = vector<vector<bool>>(size, subVec);
-        for (int i = 0; i < size; ++i) {
-            dpVec[i][i] = true;
+        if (s[i] != s[j]) {
+            record[i][j] = 2;
+            return false;
         }
+
+        if (j - i < 3) {
+            record[i][j] = 1;
+            return true; 
+        }
+
+        if (isPalindrome(s, record, i + 1, j - 1)) {
+            record[i][j] = 1;
+            return true;
+        }
+
+        record[i][j] = 2;
+        return false;
     }
-private:
-    vector<vector<bool>> dpVec;
 };
 // @lc code=end
-
-int main() {
-    string s = "babad";
-    Solution sol;
-    auto res = sol.longestPalindrome(s);
-    return 0;
-}
 
