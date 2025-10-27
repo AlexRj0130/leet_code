@@ -11,32 +11,47 @@ using namespace std;
 // @lc code=start
 class Solution {
 public:
-     vector<int> searchRange(vector<int>& nums, int target) {
-        auto left = binSearch(nums, target, true);
-        auto right = binSearch(nums, target, false);
-        return vector<int>{left, right};
-    }
-private:
-    int binSearch(vector<int>& nums, int target, bool searchLeft) {
+    vector<int> searchRange(vector<int>& nums, int target) {
+        if (nums.size() <= 0) {
+            return {-1, -1};
+        } 
+
+        int resLeft = -1, resRight = -1;
         int left = 0, right = nums.size() - 1;
-        int res = -1;
         while (left <= right) {
             int mid = (left + right) / 2;
-            if (nums[mid] == target) {
-                res = mid;
-                if (searchLeft) {
-                    right = mid - 1;
-                } else {
-                    left = mid + 1;
+            int midVal = nums[mid];
+
+            if (midVal >= target) {
+                if (midVal == target) {
+                    resLeft = mid;
                 }
-            } else if (nums[mid] < target ) {
-                left = mid + 1; 
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        if (resLeft == -1) {
+            return {-1, -1};
+        }
+
+        left = 0, right = nums.size() - 1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            int midVal = nums[mid];
+
+            if (midVal <= target) {
+                if (midVal == target) {
+                    resRight = mid;
+                }
+                left = mid + 1;
             } else {
                 right = mid - 1;
             }
         }
 
-        return res;
+        return {resLeft, resRight};
     }
 };
 // @lc code=end
