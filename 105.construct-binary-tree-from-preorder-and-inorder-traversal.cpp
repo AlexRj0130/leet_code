@@ -1,5 +1,5 @@
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 using namespace std;
 
@@ -33,47 +33,41 @@ struct TreeNode {
 class Solution {
 public:
     TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
-        if (preorder.size() <= 0) {
+        for (int i = 0; i < inorder.size(); ++i) {
+            inorderVal2Index.insert({inorder[i], i}); 
+        } 
+
+        return buildSubTree(preorder, 0, inorder, 0, inorder.size());
+    }
+private:
+    TreeNode* buildSubTree(const vector<int>& preorder, int preStart, const vector<int>& inorder, int inStart, int size) {
+        if (size <= 0) {
             return nullptr;
         }
 
-        int tmp = 0;
-        makeInorderVal2Index(inorder);
-        return makeSubTree(preorder, tmp, inorder, 0, inorder.size() - 1);
-    }
-private:
-    TreeNode* makeSubTree(const vector<int>& preorder, int &preorderIndex, const vector<int>& inorder, int inorderLeft, int inorderRight) {
-        int rootVal = preorder[preorderIndex];
-        int inorderRootIndex = inorderVal2Index[rootVal];
+        int rootVal = preorder[preStart]; 
+        if (size == 1) {
+            return new TreeNode(rootVal);
+        }
 
-        TreeNode *nodeLeft = nullptr, *nodeRight = nullptr;
-        if (inorderRootIndex > inorderLeft) {
-            ++preorderIndex;
-            nodeLeft = makeSubTree(preorder, preorderIndex, inorder, inorderLeft, inorderRootIndex - 1);
-        }
-        if (inorderRootIndex < inorderRight) {
-            ++preorderIndex;
-            nodeRight = makeSubTree(preorder, preorderIndex, inorder, inorderRootIndex + 1, inorderRight);
-        }
-        
-        return new TreeNode(rootVal, nodeLeft, nodeRight);
-    }
-    void makeInorderVal2Index(const vector<int>& inorder) {
-        for (int i = 0; i < inorder.size(); ++i) {
-            inorderVal2Index.insert({inorder[i], i});
-        }
+        int rootIndex = inorderVal2Index[rootVal];
+
+        int sizeOfLeft = rootIndex - inStart;
+        int sizeOfRight = size - sizeOfLeft - 1;
+        TreeNode * subTreeLeft = buildSubTree(preorder, preStart + 1, inorder, inStart, sizeOfLeft);
+        TreeNode * subTreeRight = buildSubTree(preorder, preStart + 1 + sizeOfLeft, inorder, inStart + 1 + sizeOfLeft, sizeOfRight);
+
+        return new TreeNode(rootVal, subTreeLeft, subTreeRight);
     }
 private:
-    std::unordered_map<int, int> inorderVal2Index;
+    unordered_map<int, int> inorderVal2Index;
 };
 // @lc code=end
 
 int main() {
-    vector<int> preorder{3,1,2,4};
-    vector<int> inorder{1,2,3,4};
-
+    vector<int> preorder = {1, 2}, inorder = {2, 1};
     Solution sol;
     auto res = sol.buildTree(preorder, inorder);
+
     return 0;
 }
-
