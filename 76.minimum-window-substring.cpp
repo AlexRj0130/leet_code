@@ -1,0 +1,101 @@
+#include <string>
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+/*
+ * @lc app=leetcode id=76 lang=cpp
+ *
+ * [76] Minimum Window Substring
+ */
+
+// @lc code=start
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        if (s.size() < t.size()) {
+            return "";
+        } 
+
+        vector<int> target(256, 0);
+        for (int i = 0; i < t.size(); ++i) {
+            target[t[i]] = target[t[i]] + 1;
+        }
+
+
+        int left = 0, right = 0;
+        vector<int> recordTimes(256, 0); // 记录各个字符已经出现的次数
+        int remain = t.size();
+
+        string res = "";
+        int minLen = s.size() + 1;
+
+        while (right < s.size()) {
+            while (remain > 0 && right < s.size()) {
+                auto charRight = s[right];
+                if (target[charRight] > 0) { // 出现了目标字符
+                    recordTimes[charRight] += 1; // 记录目标字符出现的次数
+                    // 如果目标字符出现的次数尚未达到要求，则每出现一次，总数减去一次
+                    if (recordTimes[charRight] <= target[charRight]) {
+                        remain -= 1;
+                    }
+                    // 立即去除首部出现的多余的目标字符
+                    while (target[s[left]] == 0 // 不在目标集合中的字符
+                        || (recordTimes[s[left]]) > target[s[left]]) // 出现次数大于要求的
+                    { 
+                        if (recordTimes[s[left]] > 0) {
+                            recordTimes[s[left]] -= 1; 
+                        }
+                        ++left;
+                    }
+                }
+                ++right;
+            }
+
+            if (remain != 0) {
+                break;
+            }
+
+            if (right - left < minLen) {
+                minLen = right - left;
+                res = s.substr(left, minLen);
+            }
+
+            while (remain <= 0 && left < right && left < s.size()) {
+                auto leftChar = s[left];
+                if (target[leftChar] > 0) {
+                    recordTimes[leftChar] -= 1;
+
+                    if (recordTimes[leftChar] < target[leftChar]) {
+                        ++left;
+                        while(left < s.size() && (target[s[left]] == 0 || recordTimes[s[left]] > target[s[left]])) {
+                            if (target[s[left]] > 0) {
+                                recordTimes[s[left]] -= 1;
+                            }
+                            ++left;
+                        }
+                        remain = 1;
+                        break;
+                    }
+                }
+
+                ++left;
+            }
+        }
+
+        return res;
+    }
+};
+// @lc code=end
+
+int main() {
+    string s = "adobecodebancbbcaa";
+    string t = "abc";
+
+    Solution sol;
+    auto res = sol.minWindow(s, t);
+
+    cout << "res = " << res << endl;
+    return 0;
+}
