@@ -25,8 +25,8 @@ public:
 
 
         int left = 0, right = 0;
-        vector<int> recordTimes(256, 0); // 记录各个字符已经出现的次数
-        int remain = t.size();
+        vector<int> recordTimes(256, 0); // 因为不要求顺序，所以记录各个字符已经出现的次数即可
+        int remain = t.size(); // 用来记录出现的总次数。
 
         string res = "";
         int minLen = s.size() + 1;
@@ -40,7 +40,7 @@ public:
                     if (recordTimes[charRight] <= target[charRight]) {
                         remain -= 1;
                     }
-                    // 立即去除首部出现的多余的目标字符
+                    // 同步调整左侧窗口：立即去除首部出现的多余的目标字符
                     while (target[s[left]] == 0 // 不在目标集合中的字符
                         || (recordTimes[s[left]]) > target[s[left]]) // 出现次数大于要求的
                     { 
@@ -53,35 +53,21 @@ public:
                 ++right;
             }
 
-            if (remain != 0) {
+            if (remain != 0 || left >= s.size()) { // 遍历到结尾，也没有凑齐所有字符
                 break;
             }
 
+            // 提取目标字符串
             if (right - left < minLen) {
                 minLen = right - left;
                 res = s.substr(left, minLen);
             }
 
-            while (remain <= 0 && left < right && left < s.size()) {
-                auto leftChar = s[left];
-                if (target[leftChar] > 0) {
-                    recordTimes[leftChar] -= 1;
-
-                    if (recordTimes[leftChar] < target[leftChar]) {
-                        ++left;
-                        while(left < s.size() && (target[s[left]] == 0 || recordTimes[s[left]] > target[s[left]])) {
-                            if (target[s[left]] > 0) {
-                                recordTimes[s[left]] -= 1;
-                            }
-                            ++left;
-                        }
-                        remain = 1;
-                        break;
-                    }
-                }
-
-                ++left;
-            }
+            // 移动左侧窗口
+            // 说明：left指向的字符是最小满足条件，移除后，即不满足条件，从而开启下一轮循环。
+            recordTimes[s[left]] -= 1; 
+            ++left;
+            remain += 1;
         }
 
         return res;
@@ -90,8 +76,8 @@ public:
 // @lc code=end
 
 int main() {
-    string s = "adobecodebancbbcaa";
-    string t = "abc";
+    string s = "ADOBECODEBANC";
+    string t = "ABC";
 
     Solution sol;
     auto res = sol.minWindow(s, t);
