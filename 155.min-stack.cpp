@@ -1,6 +1,4 @@
-#include <vector>
-#include <array>
-#include <limits>
+#include <stack>
 
 using namespace std;
 
@@ -11,38 +9,40 @@ using namespace std;
  */
 
 // @lc code=start
+struct MinStackElement {
+    int val;
+    int minVal;
+    MinStackElement(int val, int minVal) : val(val), minVal(minVal) {} 
+};
+
 class MinStack {
 public:
     MinStack() {
-        
+        minStack = {}; 
     }
     
     void push(int val) {
-        auto preMin = getMin(); 
-        auto curMin = val <= preMin ? val : preMin;
-        mStackData.push_back({val, curMin});
+        if (minStack.empty()) {
+            minStack.push(MinStackElement(val, val));
+        } else {
+            auto preMin = getMin();
+            minStack.push(MinStackElement(val, min(val, preMin)));
+        }
     }
     
     void pop() {
-        mStackData.pop_back(); 
+        minStack.pop(); 
     }
     
     int top() {
-        if (mStackData.empty()) {
-            return std::numeric_limits<int>::max();
-        } 
-
-        return mStackData.back()[0];
+        return minStack.top().val; 
     }
     
     int getMin() {
-        if (mStackData.empty()) {
-            return std::numeric_limits<int>::max();
-        }
-        return mStackData.back()[1];
+        return minStack.top().minVal; 
     }
 private:
-    vector<std::array<int, 2>> mStackData;
+    stack<MinStackElement> minStack;
 };
 
 /**
