@@ -83,6 +83,7 @@
         "numeric": "cpp",
         "text_encoding": "cpp",
         "thread": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "semaphore": "cpp"
     }
 }
