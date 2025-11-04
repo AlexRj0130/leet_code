@@ -15,28 +15,56 @@ public:
     void nextPermutation(vector<int>& nums) {
         if (nums.size() <= 1) {
             return;
-        } 
-
-        int i = nums.size() - 1; 
-        while (i > 0 && nums[i] <= nums[i - 1]) {
-            --i;
         }
 
-        if (i == 0) {
-            reverse(nums.begin(), nums.end());
+        int revIndex = findFirstReverseIndex(nums);
+        if (revIndex < 0) {
+            sort(nums.begin(), nums.end());
             return;
         }
 
-        int j = nums.size() - 1;
-        while (j >= i && nums[j] <= nums[i - 1]) {
-            --j;
+        int fgtIndex = findFirstGTIndex(nums, nums[revIndex], revIndex + 1, nums.size() - 1);
+        if (fgtIndex < 0) {
+            return;
         }
 
-        int tmp = nums[i - 1];
-        nums[i - 1] = nums[j];
-        nums[j] = tmp;
-        sort(nums.begin() + i, nums.end());
+        swap(nums[revIndex], nums[fgtIndex]);
+        sort(nums.begin() + revIndex + 1, nums.end());
+    }
+private:
+    int findFirstReverseIndex(const vector<int>& nums) {
+        int i = nums.size() - 2;
+        for (; i >= 0; --i) {
+            if (nums[i] >= nums[i + 1]) {
+                continue;
+            }
+            return i;
+        }
+
+        return i;
+    }
+
+    int findFirstGTIndex(const vector<int>& nums, int target, int left, int right) {
+        int res = -1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (nums[mid] > target) {
+                res = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return res;
     }
 };
 // @lc code=end
 
+
+int main() {
+    vector<int> nums = {1, 2, 3};
+    Solution sol;
+    sol.nextPermutation(nums);
+    return 0;
+}
