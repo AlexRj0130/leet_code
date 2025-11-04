@@ -38,14 +38,28 @@ public:
             return lists[0];
         }
 
-        auto res = lists[0];
-        for (int i = 1; i < lists.size(); ++i) {
-            res = mergeTwoList(res, lists[i]);
-        }
-
-        return res;
+        return divideMerge(lists, 0, lists.size() - 1);
     }
 private:
+    ListNode * divideMerge(vector<ListNode*>& lists, int start, int end) {
+        if (start > end) {
+            return nullptr;
+        }
+
+        if (start == end) {
+            return lists[start];
+        }
+
+        if (end - start == 1) {
+            return mergeTwoList(lists[start], lists[end]);
+        }
+
+        int mid = (start + end) / 2;
+        auto subRes1 = divideMerge(lists, start, mid);
+        auto subRes2 = divideMerge(lists, mid + 1, end);
+        return mergeTwoList(subRes1, subRes2);
+    } 
+
     ListNode* mergeTwoList(ListNode* root1, ListNode * root2) {
         if (root1 == nullptr) {
             return root2;
