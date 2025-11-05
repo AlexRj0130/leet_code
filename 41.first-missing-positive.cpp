@@ -16,39 +16,22 @@ public:
             return 1;
         } 
 
-        // 第一次遍历，将所有负数全部调整为 0
+        int minValid = 1, maxValid = nums.size();
         for (int i = 0; i < nums.size(); ++i) {
-            if (nums[i] < 0) {
-                nums[i] = 0;
-            }
+            int val = nums[i];
+            while (val >= minValid && val <= maxValid && nums[i] != i + 1) { // 先处理好当前 nums[i]，再进入下一个 i+1，避免遗漏。
+                int tmp = nums[val - 1];
+                nums[val - 1] = val;
+                if (val != tmp) {  // 避免换回相同的值，进而进入死循环。
+                    val = nums[i] = tmp;
+                } else {
+                    val = nums[i] = -1;
+                }
+            }   
         }
 
-        // 第二次遍历，将数组中所有非0值的绝对值对应的下标中的数值调整为对应的负数
         for (int i = 0; i < nums.size(); ++i) {
-            int index = -1;
-            if (nums[i] > 0 && nums[i] <= nums.size()) {
-                index = nums[i] - 1; 
-            }
-            if (nums[i] < 0 && nums[i] >= (0 - nums.size())) {
-                index = (0 - nums[i]) - 1;
-            }
-
-            if (index < 0) {
-                continue;
-            }
-
-            if (nums[index] < 0) {
-                continue;
-            } else if (nums[index] == 0) {
-                nums[index] = 0 - index - 1;
-            } else {
-                nums[index] = 0 - nums[index];
-            }
-        }
-
-        // 第三次遍历，找出首个不为负数的下标
-        for (int i = 0; i < nums.size(); ++i) {
-            if (nums[i] >= 0) {
+            if (nums[i] != i + 1) {
                 return i + 1;
             }
         }
@@ -58,3 +41,11 @@ public:
 };
 // @lc code=end
 
+int main() {
+    vector<int> nums = {1,1};
+    
+    Solution sol;
+    auto res = sol.firstMissingPositive(nums);
+
+    return 0;
+}
