@@ -14,47 +14,34 @@ public:
     int rob(vector<int>& nums) {
         if (nums.size() <= 0) {
             return 0;
-        } else if (nums.size() == 1) {
+        } 
+        if (nums.size() == 1) {
             return nums[0];
         }
 
-        initDp(nums);
+        vector<int> dpSum(nums.size() + 1, 0);
+        dpSum[1] = nums[0];
+    
+        vector<bool> dpFlag(nums.size() + 1, false);
+        dpFlag[1] = true;
 
-        for (int i = 2; i <= mNumsSize; ++i) {
-            int sumTmp = nums[i-1];
-            if (mDpFlagVec[i - 1]) {
-                sumTmp += mDpSumVec[i - 2];
+        for (int i = 2; i <= nums.size(); ++i) {
+            if (dpFlag[i - 1]) {
+                if (dpSum[i - 1] > dpSum[i - 2] + nums[i - 1]) {
+                    dpSum[i] = dpSum[i - 1];
+                    dpFlag[i] = false;
+                } else {
+                    dpSum[i] = dpSum[i - 2] + nums[i - 1];
+                    dpFlag[i] = true;
+                }
             } else {
-                sumTmp += mDpSumVec[i - 1];
-            }
-
-            if (sumTmp > mDpSumVec[i - 1]) {
-                mDpSumVec[i] = sumTmp;
-                mDpFlagVec[i] = true;
-            } else {
-                mDpSumVec[i] = mDpSumVec[i - 1];
+                dpSum[i] = dpSum[i - 1] + nums[i - 1]; 
+                dpFlag[i] = true;
             }
         }
 
-        return mDpSumVec[mNumsSize];
+        return dpSum[nums.size()];
     }
-private:
-    void initDp(const vector<int>& nums) {
-        mNumsSize = nums.size();
-        mDpFlagVec = vector<bool>(mNumsSize + 1, false);
-        mDpSumVec = vector<int>(mNumsSize + 1, false);
-
-        mDpFlagVec[0] = false;
-        mDpFlagVec[1] = true;
-
-        mDpSumVec[0] = 0;
-        mDpSumVec[1] = nums[0];
-    }
-
-private:
-    vector<bool> mDpFlagVec;
-    vector<int> mDpSumVec;
-    int mNumsSize{0};
 };
 // @lc code=end
 
