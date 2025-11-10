@@ -1,6 +1,5 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
@@ -14,39 +13,36 @@ using namespace std;
 class Solution {
 public:
     int minDistance(string word1, string word2) {
-        initDp(word1.size(), word2.size());
-        stateTransfer(word1, word2);
-        return dp[word1.size()][word2.size()];
-    }
-private:
-    void stateTransfer(const string &word1, const string &word2) {
-        auto rowSize = word1.size();
-        auto colSize = word2.size();
+        if (word1.size() <= 0 || word2.size() <= 0) {
+            return max(word1.size(), word2.size());
+        } 
 
-        for (int i = 1; i <= rowSize; ++i) {
-            for (int j = 1; j <= colSize; ++j) {
+        int size1 = word1.size(), size2 = word2.size();
+        
+        vector<vector<int>> dp(size1 + 1, vector<int>(size2 + 1, 0));
+        for (int i = 0; i <= size1; ++i) {
+            dp[i][0] = i;
+        }
+        for (int j = 0; j <= size2; ++j) {
+            dp[0][j] = j;
+        }
+
+        for (int i = 1; i <= size1; ++i) {
+            for (int j = 1; j <= size2; ++j) {
                 if (word1[i-1] == word2[j-1]) {
                     dp[i][j] = dp[i-1][j-1];
                     continue;
                 }
-                dp[i][j] = min(dp[i-1][j], min(dp[i][j-1], dp[i-1][j-1])) + 1;
+
+                auto minInsert = dp[i][j-1] + 1;
+                auto minDelete = dp[i-1][j] + 1;
+                auto minReplace = dp[i-1][j-1] + 1;
+                dp[i][j] = min(minInsert, min(minDelete, minReplace));
             }
         }
+
+        return dp[size1][size2];
     }
-
-    void initDp(int rowSize, int colSize) {
-        dp = vector<vector<int>>(rowSize + 1, vector<int>(colSize + 1, 0));
-        for (int i = 0; i <= rowSize; ++i) {
-            dp[i][0] = i;
-        }
-
-        for (int j = 0; j <= colSize; ++j) {
-            dp[0][j] = j;
-        }
-    }
-
-private:
-    vector<vector<int>> dp;
 };
 // @lc code=end
 
