@@ -33,69 +33,58 @@ struct TreeNode {
 class Solution {
 public:
     bool isSymmetric(TreeNode* root) {
-        vector<int> res1, res2; 
+        if (root == nullptr) {
+            return true;
+        }
 
-        leftToRight(root, res1);
-        rightToLeft(root, res2);
+        vector<int> res1, res2; 
+        inOrder(root->left, res1, 1000, 1);
+        inOrderRev(root->right, res2, 1000, 1);
 
         return res1 == res2;
     }
 private:
-    void leftToRight(TreeNode * node, vector<int> &res) {
+    void inOrder(TreeNode* node, vector<int> &res, int flagVal, int depth) {
         if (node == nullptr) {
+            res.push_back(flagVal * depth);
             return;
         }
 
-        queue<TreeNode *> treeQueue;
-        treeQueue.push(node);
-
-        while (!treeQueue.empty()) {
-            node = treeQueue.front();
-            treeQueue.pop();
-
-            res.push_back(node->val);
-            
-            if (node->left != nullptr) {
-                treeQueue.push(node->left);
-            } else {
-                res.push_back(-1000);
-            }
-
-            if (node->right != nullptr) {
-                treeQueue.push(node->right);
-            } else {
-                res.push_back(1000);
-            }
-        }
+        inOrder(node->left, res, 1000, depth + 1);
+        res.push_back(node->val);
+        inOrder(node->right, res, -1000, depth + 1);
     }
 
-    void rightToLeft(TreeNode * node, vector<int> &res) {
+    void inOrderRev(TreeNode* node, vector<int> &res, int flagVal, int depth) {
         if (node == nullptr) {
+            res.push_back(flagVal * depth);
             return;
         }
 
-        queue<TreeNode *> treeQueue;
-        treeQueue.push(node);
-
-        while (!treeQueue.empty()) {
-            node = treeQueue.front();
-            treeQueue.pop();
-
-            res.push_back(node->val);
-            
-            if (node->right != nullptr) {
-                treeQueue.push(node->right);
-            } else {
-                res.push_back(-1000); 
-            }
-
-            if (node->left != nullptr) {
-                treeQueue.push(node->left);
-            } else {
-                res.push_back(1000);
-            }
-        }
+        inOrderRev(node->right, res, 1000, depth + 1);
+        res.push_back(node->val);
+        inOrderRev(node->left, res, -1000, depth + 1);
     }
 };
 // @lc code=end
 
+int main() {
+    auto root = new TreeNode(
+        2, 
+        new TreeNode(3,
+            new TreeNode(4),
+            new TreeNode(5,
+                new TreeNode(8),
+                new TreeNode(9))),
+        new TreeNode(3,
+            new TreeNode(5,
+                new TreeNode(9),
+                new TreeNode(8)),
+            new TreeNode(4))
+    );
+
+    Solution sol;
+    sol.isSymmetric(root);
+
+    return 0;
+}
