@@ -1,4 +1,5 @@
 #include <vector>
+#include <stack>
 
 using namespace std;
 
@@ -33,18 +34,24 @@ class Solution {
 public:
     vector<int> inorderTraversal(TreeNode* root) {
         vector<int> res;
-        inOrder(root, res);
-        return res;
-    }
-private:
-    void inOrder(TreeNode* root, vector<int> &res) {
-        if (root == nullptr) {
-            return;
+        stack<TreeNode*> treeStack;
+        while (root != nullptr) {
+            treeStack.push(root);
+            root = root->left;
         }
 
-        inOrder(root->left, res);
-        res.push_back(root->val);
-        inOrder(root->right, res);
+        while (!treeStack.empty()) {
+            auto node = treeStack.top();
+            treeStack.pop();
+            res.push_back(node->val);
+
+            node = node->right;
+            while (node != nullptr) {
+                treeStack.push(node);
+                node = node->left;
+            }
+        }
+        return res;
     }
 };
 // @lc code=end
