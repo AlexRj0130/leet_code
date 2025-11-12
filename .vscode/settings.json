@@ -84,6 +84,7 @@
         "text_encoding": "cpp",
         "thread": "cpp",
         "complex": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "span": "cpp"
     }
 }

@@ -1,6 +1,7 @@
-#include <vector>
 #include <string>
+#include <vector>
 #include <unordered_set>
+#include <algorithm>
 
 using namespace std;
 
@@ -16,48 +17,44 @@ public:
     bool wordBreak(string s, vector<string>& wordDict) {
         if (s.size() <= 0) {
             return true;
-        } 
-
-        if (wordDict.size() <= 0) {
-            return false;
         }
 
-        init(s, wordDict);
+        vector<bool> dp(s.size() + 1, false);
+        dp[0] = true; 
+
+        unordered_set<string> wordSet(wordDict.begin(), wordDict.end());
 
         for (int i = 1; i <= s.size(); ++i) {
-            if (mWordSet.contains(s.substr(0, i))) {
-                mDpVec[i] = true;
-                continue;
-            }
-
-            bool findFlag = false;
-            for (int j = 1; j < i; ++j) {
-                if (mDpVec[j] && mWordSet.contains(s.substr(j, i - j))) {
-                    findFlag = true;
-                    break;
+            for (auto word : wordSet) {
+                if (word.size() > i) {
+                    continue;
                 }
+
+                auto pos = i - word.size();
+                auto size = word.size();
+                auto subStr = s.substr(pos, size);
+                if (subStr != word) {
+                    continue;
+                }
+
+                if (!dp[pos]) {
+                    continue;
+                }
+
+                dp[i] = true;
+                break;
             }
-            mDpVec[i] = findFlag;
         }
 
-        return mDpVec[s.size()];
-    }
-private:
-    void init(const string &s, const vector<string> &wordDict) {
-        mSize = s.size() + 1;
-        mDpVec = vector<bool>(mSize, false);
-
-        for (const auto &word: wordDict) {
-            mWordSet.insert(word);
-        }
-
-        mDpVec[0] = true;
-        mDpVec[1] = mWordSet.contains(s.substr(0, 1));
-    }
-private:
-    unordered_set<string> mWordSet;
-    int mSize{0};
-    vector<bool> mDpVec;
+        return dp[s.size()];
+    } 
 };
 // @lc code=end
 
+int main() {
+    string str = "leetcode";
+    vector<string> dictWord{"leet", "code"};
+    Solution sol;
+    sol.wordBreak(str, dictWord);
+    return 0;
+}
