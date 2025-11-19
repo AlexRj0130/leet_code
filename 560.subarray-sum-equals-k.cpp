@@ -1,4 +1,5 @@
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -12,18 +13,22 @@ using namespace std;
 class Solution {
 public:
     int subarraySum(vector<int>& nums, int k) {
-        int res = 0;
-        for (int i = 0; i < nums.size(); ++i) {
-            int sum = 0;
-            for (int j = i; j < nums.size(); ++j) {
-                sum += nums[j];
-                if (sum == k) {
-                    ++res;
-                }
+        int count = 0;
+        int curSum = 0;
+        unordered_map<int, int> prefixSum;
+
+        prefixSum[0] = 1;
+
+        for (auto num : nums) {
+            curSum += num;
+            if (prefixSum.contains(curSum - k)) {
+                count += prefixSum[curSum -k];
             }
+
+            ++prefixSum[curSum];
         }
 
-        return res;
+        return count;
     }
 };
 // @lc code=end
