@@ -28,48 +28,43 @@ struct TreeNode {
 class Solution {
 public:
     bool isValidBST(TreeNode* root) {
-        int minVal, maxVal;
-        bool isLeaf;
-        return isValidBSTSub(root, isLeaf, minVal, maxVal); 
+        int min, max;
+        return isValidBSTSub(root, min, max);
     }
 private:
-    bool isValidBSTSub(TreeNode* root, bool &isLeaf, int &minVal, int &maxVal) {
+    bool isValidBSTSub(TreeNode* root, int &min, int &max) {
         if (root == nullptr) {
-            isLeaf = true;
             return true;
         }
 
-        isLeaf = false;
-
-        bool isSubLeafLeft = false, isSubLeafRight = false;
-        int minSubLeft = 0, maxSubLeft = 0, minSubRight = 0, maxSubRight = 0;
-
-        bool isValidLeft = isValidBSTSub(root->left, isSubLeafLeft, minSubLeft, maxSubLeft);
-        if (!isValidLeft) {
-            return false;
-        }
-    
-        bool isValidRight = isValidBSTSub(root->right, isSubLeafRight, minSubRight, maxSubRight);
-        if (!isValidRight) {
-            return false;
+        min = max = root->val;
+        if (root->left == nullptr && root->right == nullptr) {
+            return true;
         }
 
-        if (!isSubLeafLeft) {
-            if (maxSubLeft >= root->val) {
+        int minLeft = root->val, maxLeft = root->val, minRight = root->val, maxRight = root->val;
+        if (root->left != nullptr) {
+            if (!isValidBSTSub(root->left, minLeft, maxLeft)) {
                 return false;
             }
-            minVal = minSubLeft;
-        } else {
-            minVal = root->val;
-        }
 
-        if (!isSubLeafRight) {
-            if (minSubRight <= root->val) {
+            if (maxLeft >= root->val) {
                 return false;
             }
-            maxVal = maxSubRight;
-        } else {
-            maxVal = root->val;
+
+            min = minLeft;
+        }
+
+        if (root->right != nullptr) {
+            if (!isValidBSTSub(root->right, minRight, maxRight)) {
+                return false;
+            }
+
+            if (minRight <= root->val) {
+                return false;
+            }
+
+            max = maxRight;
         }
 
         return true;
