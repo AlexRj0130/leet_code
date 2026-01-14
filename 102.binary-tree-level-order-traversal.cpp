@@ -46,34 +46,26 @@ public:
             return {};
         }
 
-        queue<QueueNode> queue;
+        vector<vector<int>> res;
+        std::queue<QueueNode> queue;
         queue.push({root, 0});
 
-        vector<vector<int>> res;
-        while(!queue.empty()) {
-            vector<int> resItem;
-            auto item = queue.front();
+        while (!queue.empty()) {
+            auto node = queue.front();
             queue.pop();
-            resItem.push_back(item.treeNode->val);
-            if (item.treeNode->left != nullptr) {
-                queue.push({item.treeNode->left, item.nodeLevel + 1});
+
+            if (node.treeNode->left != nullptr) {
+                queue.push({node.treeNode->left, node.nodeLevel + 1});
             }
-            if (item.treeNode->right != nullptr) {
-                queue.push({item.treeNode->right, item.nodeLevel + 1});
+            if (node.treeNode->right != nullptr) {
+                queue.push({node.treeNode->right, node.nodeLevel + 1});
             }
 
-            while((!queue.empty()) && queue.front().nodeLevel== item.nodeLevel) {
-                auto sameItem = queue.front();
-                queue.pop();
-                resItem.push_back(sameItem.treeNode->val);
-                if (sameItem.treeNode->left != nullptr) {
-                    queue.push({sameItem.treeNode->left, sameItem.nodeLevel + 1});
-                }
-                if (sameItem.treeNode->right != nullptr) {
-                    queue.push({sameItem.treeNode->right, sameItem.nodeLevel + 1});
-                }
+            while (res.size() <= node.nodeLevel) {
+                res.push_back(vector<int>());
             }
-            res.push_back(resItem);
+
+            res[node.nodeLevel].push_back(node.treeNode->val);
         }
 
         return res;
