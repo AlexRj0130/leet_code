@@ -28,43 +28,28 @@ struct TreeNode {
 class Solution {
 public:
     bool isValidBST(TreeNode* root) {
-        int min, max;
-        return isValidBSTSub(root, min, max);
+        int tmp = 0;
+        bool tmpFlag = false;
+        return inOrder(root, tmp, tmpFlag, 0);
     }
 private:
-    bool isValidBSTSub(TreeNode* root, int &min, int &max) {
-        if (root == nullptr) {
+    bool inOrder(TreeNode* node, int &preVal, bool &hasPreVal, int depth) {
+        if (node == nullptr) {
             return true;
         }
 
-        min = max = root->val;
-        if (root->left == nullptr && root->right == nullptr) {
-            return true;
+        if (!inOrder(node->left, preVal, hasPreVal, depth + 1)) {
+            return false;
         }
 
-        int minLeft = root->val, maxLeft = root->val, minRight = root->val, maxRight = root->val;
-        if (root->left != nullptr) {
-            if (!isValidBSTSub(root->left, minLeft, maxLeft)) {
-                return false;
-            }
-
-            if (maxLeft >= root->val) {
-                return false;
-            }
-
-            min = minLeft;
+        if (hasPreVal && node->val <= preVal) {
+            return false;
         }
+        preVal = node->val;
+        hasPreVal = true;
 
-        if (root->right != nullptr) {
-            if (!isValidBSTSub(root->right, minRight, maxRight)) {
-                return false;
-            }
-
-            if (minRight <= root->val) {
-                return false;
-            }
-
-            max = maxRight;
+        if (!inOrder(node->right, preVal, hasPreVal, depth + 1)) {
+            return false;
         }
 
         return true;
@@ -72,3 +57,13 @@ private:
 };
 // @lc code=end
 
+int main() {
+    TreeNode * root = new TreeNode(1, 
+        new TreeNode(1),
+        nullptr);
+
+    Solution sol;
+    auto res = sol.isValidBST(root);
+    
+    return 0;
+}
