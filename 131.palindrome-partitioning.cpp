@@ -12,44 +12,48 @@ using namespace std;
 class Solution {
 public:
     vector<vector<string>> partition(string s) {
-        vector<vector<string>> result;  // 存储所有符合条件的分割方案
-        vector<string> path;            // 存储当前分割路径
-        backtrack(s, 0, path, result);  // 从索引0开始回溯
+        int n = s.size();
+        // 1. DP 预处理：dp[i][j] 表示 s[i..j] 是否为回文串
+        vector<vector<bool>> dp(n, vector<bool>(n, false));
+        // 先处理长度为1的子串（i==j）
+        for (int i = 0; i < n; ++i) {
+            dp[i][i] = true;
+        }
+        // 处理长度>=2的子串（按子串长度从小到大遍历）
+        for (int len = 2; len <= n; ++len) {  // len 表示子串长度
+            for (int i = 0; i + len <= n; ++i) {  // i 是子串起始索引
+                int j = i + len - 1;  // j 是子串结束索引
+                if (len == 2) {
+                    dp[i][j] = (s[i] == s[j]);
+                } else {
+                    dp[i][j] = (s[i] == s[j]) && dp[i+1][j-1];
+                }
+            }
+        }
+
+        // 2. 基于DP数组的回溯
+        vector<vector<string>> result;
+        vector<string> path;
+        backtrack(s, 0, dp, path, result);
         return result;
     }
 private:
-    // 回溯函数：start表示当前处理的起始索引，path是当前分割路径，result是最终结果
-    void backtrack(const string& s, int start, vector<string>& path, vector<vector<string>>& result) {
-        // 终止条件：起始索引到达字符串末尾，说明当前路径是有效分割
+    // 回溯函数：直接使用dp数组判断回文，无需重复计算
+    void backtrack(const string& s, int start, const vector<vector<bool>>& dp,
+                   vector<string>& path, vector<vector<string>>& result) {
         if (start == s.size()) {
             result.push_back(path);
             return;
         }
 
-        // 枚举从start开始的所有可能分割点
         for (int i = start; i < s.size(); ++i) {
-            // 判断子串s[start..i]是否为回文串
-            if (isPalindrome(s, start, i)) {
-                // 若是回文串，加入当前路径
+            // 直接查表，O(1) 判断 s[start..i] 是否为回文
+            if (dp[start][i]) {
                 path.push_back(s.substr(start, i - start + 1));
-                // 递归处理剩余部分（i+1开始）
-                backtrack(s, i + 1, path, result);
-                // 回溯：移除当前子串，尝试下一个分割点
-                path.pop_back();
+                backtrack(s, i + 1, dp, path, result);
+                path.pop_back();  // 回溯
             }
         }
-    }
-
-    // 双指针法判断子串s[left..right]是否为回文串
-    bool isPalindrome(const string& s, int left, int right) {
-        while (left < right) {
-            if (s[left] != s[right]) {
-                return false;
-            }
-            left++;
-            right--;
-        }
-        return true;
     }
 };
 // @lc code=end
