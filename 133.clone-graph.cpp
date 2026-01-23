@@ -54,57 +54,30 @@ public:
 class Solution {
 public:
     Node* cloneGraph(Node* node) {
-        if (node == nullptr) {
-            return nullptr;
-        } 
-
-        unordered_map<int, Node*> nodeMap;
-        unordered_set<int> nodeSet;
-
-        bfsToCopyNode(node, nodeMap);
-        return bfsToConnectNode(node, nodeMap, nodeSet);
+        // 边界条件：空节点直接返回空
+        if (node == nullptr) return nullptr;
+        
+        // 若该节点已克隆，直接返回克隆节点（避免重复创建+死循环）
+        if (cloneMap.find(node) != cloneMap.end()) {
+            return cloneMap[node];
+        }
+        
+        // 1. 克隆当前节点（仅复制值，邻接列表先空）
+        Node* cloneNode = new Node(node->val);
+        // 2. 记录映射（必须先记录，否则递归邻居时会重复创建）
+        cloneMap[node] = cloneNode;
+        
+        // 3. 递归克隆所有邻居，并添加到克隆节点的邻接列表
+        for (Node* neighbor : node->neighbors) {
+            cloneNode->neighbors.push_back(cloneGraph(neighbor));
+        }
+        
+        return cloneNode;
     }
 
 private:
-    void bfsToCopyNode(Node* node, unordered_map<int, Node*> &nodeMap) {
-        if (node == nullptr) {
-            return;
-        }
-
-        if (nodeMap.contains(node->val)) {
-            return;
-        }
-
-        nodeMap[node->val] = new Node(node->val);
-        for (auto pNode : node->neighbors) {
-            bfsToCopyNode(pNode, nodeMap);
-        }
-    }
-
-    Node * bfsToConnectNode(Node* node, const unordered_map<int, Node*> &nodeMap, unordered_set<int> &nodeSet) {
-        if (node == nullptr || nodeSet.contains(node->val)) {
-            return nullptr;
-        }
-
-        auto res = nodeMap.at(node->val);
-        if (res == nullptr) {
-            return nullptr;
-        }
-        
-        nodeSet.insert(node->val);
-        for (auto pNode : node->neighbors) {
-            if (pNode == nullptr || nodeMap.at(pNode->val) == nullptr) {
-                continue;
-            }
-            res->neighbors.push_back(nodeMap.at(pNode->val));
-        }
-
-        for (auto pNode : node->neighbors) {
-            auto subRes = bfsToConnectNode(pNode, nodeMap, nodeSet);
-        } 
-
-        return res;
-    }
+    // 哈希表：原节点 -> 克隆节点，避免重复克隆
+    unordered_map<Node*, Node*> cloneMap;
 };
 // @lc code=end
 
