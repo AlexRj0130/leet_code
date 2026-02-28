@@ -19,7 +19,11 @@ public:
             strNums.push_back(to_string(item));
         }
 
-        sort(strNums.begin(), strNums.end(), cmp);
+        auto cmp = [](const string &a, const string &b) {
+            return a + b > b + a;
+        };
+
+        sort(strNums.begin(), strNums.end(), decltype(cmp)());
 
         string res;
         for (const auto &item : strNums) {
@@ -29,30 +33,8 @@ public:
         if (res.length() > 0 && res[0] == '0') {
             return "0";
         }
-        
+
         return res;
-    }
-private:
-    static bool cmp(string a, string b) {
-         if (a.length() == b.length()) {
-                return a > b;
-            }
-
-            bool flag = false;
-
-            if (a.length() < b.length()) {
-                swap(a, b);
-                flag = true;
-            }
-
-            string aLeft = a.substr(0, b.length());
-            string aRight = a.substr(b.length(), a.length() - b.length());
-            
-            if (aLeft != b) {
-                return !flag ? aLeft > b : aLeft < b;
-            }
-
-            return !flag ? cmp(aRight, b) : cmp (b, aRight);
     }
 };
 // @lc code=end
