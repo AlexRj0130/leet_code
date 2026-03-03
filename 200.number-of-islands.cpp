@@ -12,77 +12,41 @@ using namespace std;
 class Solution {
 public:
     int numIslands(vector<vector<char>>& grid) {
-        int rowSize = grid.size();
-        if (rowSize <= 0) {
+        int maxRow = grid.size();
+        int maxCol = maxRow == 0 ? 0 : grid[0].size();
+        if (maxRow <= 0 || maxCol <= 0) {
             return 0;
-        }
-
-        int colSize = grid[0].size();
-        if (colSize <= 0) {
-            return 0;
-        }
-
-        initGridMap(grid);
-
-        int res = 1;
-        for (int i = 0; i < rowSize; ++i) {
-            for (int j = 0; j < colSize; ++j) {
-                if (markNext(gridMap, rowSize, colSize, i, j, res)) {
-                    res = res+1;
-                }
-            }
         }
         
-        return res - 1;
-    }
-
-private:
-    bool markNext(vector<vector<int>>& grid, int rowSize, int colSize, int i, int j, int flag) {
-        if (i >= rowSize || j >= colSize || i < 0 || j < 0) {
-            return false;
-        }
-
-        if (grid[i][j] != -1) {
-            return false;
-        }
-
-        grid[i][j] = flag;
-
-        markNext(grid, rowSize, colSize, i - 1, j, flag); 
-        markNext(grid, rowSize, colSize, i, j + 1, flag); 
-        markNext(grid, rowSize, colSize, i + 1, j, flag);
-        markNext(grid, rowSize, colSize, i, j - 1, flag);
-
-        return true;
-    }
-
-    void initGridMap(const vector<vector<char>>& grid) {
-        int rowSize = grid.size();
-        if (rowSize <= 0) {
-            return;
-        }
-
-        int colSize = grid[0].size();
-        if (colSize <= 0) {
-            return;
-        } 
-
-
-        for (int i = 0; i < rowSize; ++i) {
-            vector<int> newRow; 
-            for (int j = 0; j < colSize; ++j) {
+        int res = 0;
+        for (int i = 0; i < maxRow; ++i) {
+            for (int j = 0; j < maxCol; ++j) {
                 if (grid[i][j] == '1') {
-                    newRow.push_back(-1);
-                } else {
-                    newRow.push_back(0);
+                    ++res;
+                    dfs(grid, i,j, maxRow, maxCol);
                 }
             }
-            gridMap.push_back(newRow);
         }
+
+        return res;
     }
 
 private:
-    vector<vector<int>> gridMap;  
+    void dfs(vector<vector<char>>& grid, int row, int col, const int maxRow, const int maxCol) {
+        if (row < 0 || row >= maxRow || col < 0 || col >= maxCol) {
+            return;
+        }
+
+        if (grid[row][col] != '1') {
+            return;
+        }
+        grid[row][col] = '#';
+
+        dfs(grid, row, col + 1, maxRow, maxCol);
+        dfs(grid, row, col - 1, maxRow, maxCol);
+        dfs(grid, row - 1, col, maxRow, maxCol);
+        dfs(grid, row + 1, col, maxRow, maxCol);
+    }
 };
 // @lc code=end
 
