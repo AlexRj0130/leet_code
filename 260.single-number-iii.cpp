@@ -13,18 +13,36 @@ using namespace std;
 class Solution {
 public:
     vector<int> singleNumber(vector<int>& nums) {
-        unordered_set<int> resSet; 
-
+        int xorTmp = 0; 
         for (auto num : nums) {
-            if (resSet.contains(num)) {
-                resSet.erase(num);
+            xorTmp ^= num;
+        }
+
+        int mask = 1;
+        while ((xorTmp & 1) == 0) {
+            xorTmp = xorTmp >> 1;
+            mask = mask << 1;
+        }
+
+        int a = 0, b = 0;
+        for (auto num : nums) {
+            if (num & mask) {
+                a ^= num;
             } else {
-                resSet.insert(num);
+                b ^= num;
             }
         }
 
-        return vector<int>(resSet.begin(), resSet.end());
+        return {a, b};
     }
 };
 // @lc code=end
 
+int main() {
+    vector<int> nums = {1,2,1,3,2,5};
+
+    Solution sol;
+    sol.singleNumber(nums);
+
+    return 0;
+}
