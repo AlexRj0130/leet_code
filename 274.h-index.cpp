@@ -12,25 +12,27 @@ using namespace std;
 class Solution {
 public:
     int hIndex(vector<int>& citations) {
-        vector<int> vecCount(1000 + 1, 0);
-        for (auto item : citations) {
-            mark(vecCount, item);
-        }
+        const int size = citations.size();
+        vector<int> count(size + 1, 0); 
 
-        int res = 0;
-        for (int i = 0; i < vecCount.size(); ++i) {
-            if (vecCount[i] >= i) {
-                res = i;
+        // 统计引用次数为 item 的论文的数量, 下标为引用次数，值为论文数量
+        for (auto item : citations) {
+            if (item >= size) {
+                ++count[size];
+            } else {
+                ++count[item];
             }
         }
 
-        return res;
-    }
-private:
-    void mark(vector<int> &vecCount, int count) {
-        for (int i = 0; i <= count; ++i) {
-            ++vecCount[i];
+        int sum = 0;
+        for (int i = size; i >= 0; --i) {
+            sum += count[i];
+            if (sum >= i) {
+                return i;
+            }
         }
+
+        return 0;
     }
 };
 // @lc code=end
