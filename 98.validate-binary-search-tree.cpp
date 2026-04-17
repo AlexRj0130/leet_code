@@ -28,30 +28,31 @@ struct TreeNode {
 class Solution {
 public:
     bool isValidBST(TreeNode* root) {
-        int tmp = 0;
-        bool tmpFlag = false;
-        return inOrder(root, tmp, tmpFlag, 0);
+        int min, max;
+        return isBST(root, min, max);
     }
 private:
-    bool inOrder(TreeNode* node, int &preVal, bool &hasPreVal, int depth) {
+    bool isBST(TreeNode *node, int &min, int &max) {
         if (node == nullptr) {
             return true;
         }
 
-        if (!inOrder(node->left, preVal, hasPreVal, depth + 1)) {
-            return false;
+        min = max = node->val;
+        if (node->left != nullptr) {
+            int tmpMin = 0, tmpMax = 0;
+            if ((!isBST(node->left, tmpMin, tmpMax)) || node->val <= tmpMax) {
+                return false;
+            }
+            min = tmpMin;
         }
 
-        if (hasPreVal && node->val <= preVal) {
-            return false;
+        if (node->right != nullptr) {
+            int tmpMin = 0, tmpMax = 0;
+            if ((!isBST(node->right, tmpMin, tmpMax)) || node->val >= tmpMin) {
+                return false;
+            }
+            max = tmpMax;
         }
-        preVal = node->val;
-        hasPreVal = true;
-
-        if (!inOrder(node->right, preVal, hasPreVal, depth + 1)) {
-            return false;
-        }
-
         return true;
     }
 };
