@@ -36,34 +36,27 @@ public:
         if (root == nullptr) {
             return true;
         }
-
-        vector<int> res1, res2; 
-        inOrder(root->left, res1, 1000, 1);
-        inOrderRev(root->right, res2, 1000, 1);
-
-        return res1 == res2;
+        return isSymmetric(root->left, root->right);
     }
 private:
-    void inOrder(TreeNode* node, vector<int> &res, int flagVal, int depth) {
-        if (node == nullptr) {
-            res.push_back(flagVal * depth);
-            return;
+    bool isSymmetric(TreeNode* rootLeft, TreeNode* rootRight) {
+        if (rootLeft == nullptr && rootRight == nullptr) {
+            return true;
+        } else if (rootLeft == nullptr && rootRight != nullptr) {
+            return false;
+        } else if (rootLeft != nullptr && rootRight == nullptr) {
+            return false;
         }
 
-        inOrder(node->left, res, 1000, depth + 1);
-        res.push_back(node->val);
-        inOrder(node->right, res, -1000, depth + 1);
-    }
-
-    void inOrderRev(TreeNode* node, vector<int> &res, int flagVal, int depth) {
-        if (node == nullptr) {
-            res.push_back(flagVal * depth);
-            return;
+        if (!isSymmetric(rootLeft->left, rootRight->right)) {
+            return false;
         }
 
-        inOrderRev(node->right, res, 1000, depth + 1);
-        res.push_back(node->val);
-        inOrderRev(node->left, res, -1000, depth + 1);
+        if (rootLeft->val != rootRight->val) {
+            return false;
+        }
+
+        return isSymmetric(rootLeft->right, rootRight->left);
     }
 };
 // @lc code=end
