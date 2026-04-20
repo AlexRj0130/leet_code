@@ -44,32 +44,42 @@ public:
         } 
 
         vector<int> res;
+        TreeNodeWithDepth preNode = {root, 0};
+        nodeQueuePush(root, 0);
 
-        queue<TreeNodeWithDepth> nodeQueue;
-        nodeQueue.push(TreeNodeWithDepth(root, 0));
-        int preDepth = 0, preVal = root->val;
         while (!nodeQueue.empty()) {
             auto node = nodeQueue.front();
             nodeQueue.pop();
 
-            if (preDepth != node.depth) {  // 当深度发生变化的时候，preVal 中就是上一层最右侧节点的值。
-                res.push_back(preVal);
-            }
-            preVal = node.node->val;
-            preDepth = node.depth;
-
-            if (node.node->left != nullptr) {
-                nodeQueue.push(TreeNodeWithDepth(node.node->left, node.depth + 1));
+            if (node.depth != preNode.depth) {
+                res.push_back(preNode.node->val);
             }
 
-            if (node.node->right != nullptr) {
-                nodeQueue.push(TreeNodeWithDepth(node.node->right, node.depth + 1));
-            }
+            nodeQueuePush(node.node, node.depth);
+            preNode = node;
         }
-        res.push_back(preVal); // 最后一层最右侧的节点的值。
 
+        res.push_back(preNode.node->val);
+        
         return res;
     }
+private:
+    void nodeQueuePush(TreeNode *node, int nodeDepth) {
+        if (node == nullptr) {
+            return;
+        }
+
+        if (node->left != nullptr) {
+            nodeQueue.push({node->left, nodeDepth + 1});
+        }
+
+        if (node->right != nullptr) {
+            nodeQueue.push({node->right, nodeDepth + 1});
+        }
+    }
+
+private:
+    queue<TreeNodeWithDepth> nodeQueue;
 };
 // @lc code=end
 
