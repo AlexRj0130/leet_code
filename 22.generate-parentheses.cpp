@@ -20,25 +20,26 @@ public:
         } 
 
         vector<string> res;
-        generate(0, 0, n, "", res); 
+        backTrace(0, 0, "", n, res);
         return res;
     }
 private:
-    void generate(int nOpen, int nClose, int n, string subRes, vector<string> &res) {
-        if (nOpen == n && nClose == n) {
-            res.push_back(subRes);
+    void backTrace(int left, int right, string record, const int n, vector<string> &res) {
+        if (left >= n && right >= n) {
+            res.push_back(record);
             return;
         }
 
-        if (nOpen < n) {
-            generate(nOpen + 1, nClose, n, subRes + "(", res);
+        if (left < n) {
+            backTrace(left + 1, right, record + '(', n, res);
         }
 
-        if (nClose < nOpen) {
-            generate(nOpen, nClose + 1, n, subRes + ")", res);
+        if (right < left) {
+            backTrace(left, right + 1, record + ')', n, res);
         }
     }
 };
+
 // @lc code=end
 
 int main() {
