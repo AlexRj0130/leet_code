@@ -9,20 +9,20 @@ class Solution {
 public:
     double myPow(double x, int n) {
         if (x == 0) return 0;
-        if (n == 0) return 1.0;
+        if (n == 0) return 1;
+        if (x == 1) return 1;
         if (n == 1) return x;
 
         bool sign = false;
-        long long ln = n;
-        if (n < 0) {
+        long long nTmp = n;
+        if (nTmp < 0) {
             sign = true;
-            ln = 0 - ln;
+            nTmp = 0 - nTmp;
         }
 
-        double tmp = myPow(x, ln/2);
-        tmp = ln % 2 ? tmp * tmp * x : tmp * tmp;
-        tmp = sign ? 1/tmp : tmp;
-        return tmp;
+        auto subTmp = myPow(x, nTmp / 2);
+        auto res = nTmp % 2 ? subTmp * subTmp * x : subTmp * subTmp;
+        return !sign ? res : 1 / res;
     }
 };
 // @lc code=end
