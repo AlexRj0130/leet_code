@@ -12,85 +12,51 @@ using namespace std;
 class Solution {
 public:
     vector<int> spiralOrder(vector<vector<int>>& matrix) {
-        rowSize = matrix.size();
-        if (rowSize == 0) {
-            return {};
-        }
-        if (rowSize == 1) {
-            return matrix[0];
-        }
-        colSize = matrix[0].size();
+        if (matrix.size() <= 0) return {};
+        if (matrix[0].size() <= 0) return {}; 
 
-        flag = vector<vector<bool>>(rowSize, vector<bool>(colSize, false));
-        right(matrix, 0, 0);
+        int rowSize = matrix.size(), colSize = matrix[0].size();
 
+        vector<int> res;
+        vector<vector<bool>> recordFlag(rowSize, vector<bool>(colSize, true));
+
+        int count = 0, totalCount = rowSize * colSize;
+        int row = 0, col = 0;
+        while (count < totalCount) {
+            count += move(row, col, 0, 1, rowSize, colSize, recordFlag, matrix, res);
+            col -= 1, row += 1;
+            if (count >= totalCount) break;
+            count += move(row, col, 1, 0, rowSize, colSize, recordFlag, matrix, res);
+            row -= 1, col -= 1;
+            if (count >= totalCount) break;
+            count += move(row, col, 0, -1, rowSize, colSize, recordFlag, matrix, res);
+            col += 1, row -= 1;
+            if (count >= totalCount) break;
+            count += move(row, col, -1, 0, rowSize, colSize, recordFlag, matrix, res);
+            row += 1, col += 1;
+            if (count >= totalCount) break;
+        }
         return res;
     }
 private:
-    bool right(const vector<vector<int>>& matrix, int i, int j) {
-        if (isIndexInValid(i,j) || flag[i][j]) {
-            return false;
+    int move(int &row, int &col, const int rowStep, const int colStep, const int rowSize, const int colSize, vector<vector<bool>> & recordFlag, vector<vector<int>>& matrix, vector<int> & res) {
+        int count = 0;
+        while (row >= 0 && row < rowSize && col >= 0 && col < colSize && recordFlag[row][col]) {
+            ++count;
+            recordFlag[row][col] = false;
+            res.push_back(matrix[row][col]);
+            row += rowStep;
+            col += colStep;
         }
-
-        int s = j;
-        for (; s < colSize && !flag[i][s]; ++s) {
-            res.push_back(matrix[i][s]);
-            flag[i][s] = true;
-        }
-
-        return down(matrix, i + 1, s-1);
+        return count;
     }
-
-    bool down(const vector<vector<int>>& matrix, int i, int j) {
-        if (isIndexInValid(i,j) || flag[i][j]) {
-            return false;
-        }
-
-        int s = i;
-        for (; s < rowSize&& !flag[s][j]; ++s) {
-            res.push_back(matrix[s][j]);
-            flag[s][j] = true;
-        }
-
-        return left(matrix, s-1, j-1); 
-    }
-
-    bool left(const vector<vector<int>>& matrix, int i, int j) {
-        if (isIndexInValid(i,j) || flag[i][j]) {
-            return false;
-        }
-
-        int s = j;
-        for (; s >= 0 && !flag[i][s]; --s) {
-            res.push_back(matrix[i][s]);
-            flag[i][s] = true;
-        }
-
-        return up(matrix, i-1, s+1);
-    }
-
-    bool up(const vector<vector<int>>& matrix, int i, int j) {
-        if (isIndexInValid(i,j) || flag[i][j]) {
-            return false;
-        }
-
-        int s = i;
-        for (; s >= 0 && !flag[s][j]; --s) {
-            res.push_back(matrix[s][j]);
-            flag[s][j] = true;
-        }
-
-        return right(matrix, s+1, j+1);  
-    }
-
-    bool isIndexInValid(int i, int j) {
-        return !(i >= 0 && i < rowSize && j >= 0 && j < colSize); 
-    }
-
-private:
-    int rowSize, colSize;
-    vector<vector<bool>> flag; 
-    vector<int> res;
 };
 // @lc code=end
 
+int main() {
+    vector<vector<int>> matrix{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    
+    Solution sol;
+    auto res =  sol.spiralOrder(matrix);
+    return 0;
+}
