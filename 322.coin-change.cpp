@@ -15,45 +15,40 @@ using namespace std;
 class Solution {
 public:
     int coinChange(vector<int>& coins, int amount) {
-        if (amount < 0) {
+        if (amount < 0 || coins.size() <= 0) {
             return -1;
-        } else if (amount == 0) {
+        }
+        if (amount == 0) {
             return 0;
         }
 
         vector<int> dp(amount + 1, -1);
-        for (int i = 0; i < coins.size(); ++i) {
-            if (coins[i] > amount) { // 将无用的硬币直接过滤掉。
+        for (auto item : coins) {
+            if (item > amount) {
                 continue;
             }
-            dp[coins[i]] = 1;
+            dp[item] = 1;
         }
 
         for (int i = 1; i <= amount; ++i) {
-            if (dp[i] > 0) {
+            if (dp[i] == 1) {
                 continue;
             }
 
-            int resTmp = -1;
-            for (int j = 0; j < coins.size(); ++j) {
-                int preIndex = i - coins[j];
-                if (preIndex < 0) { // 将无用的组合直接过滤掉。
+            int tmpMin = -1;
+            for (auto coin : coins) {
+                int remain = i - coin;
+                if (remain <= 0) {
                     continue;
                 }
 
-                int minTmp = dp[preIndex];
-                if (minTmp <= 0) { // 将状态数组中不存在记录的数据直接过滤掉。
+                if (dp[remain] < 0) {
                     continue;
                 }
 
-                if (resTmp <= 0) { // 更新状态数组。
-                    resTmp = minTmp + 1;
-                } else {
-                    resTmp = min(resTmp, minTmp + 1);
-                }
+                tmpMin = tmpMin == -1 ? dp[remain] + 1 : min(tmpMin, dp[remain] + 1);
             }
-
-            dp[i] = resTmp;
+            dp[i] = tmpMin;
         }
 
         return dp[amount];
