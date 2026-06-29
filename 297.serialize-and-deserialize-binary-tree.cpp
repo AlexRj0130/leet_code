@@ -30,62 +30,49 @@ struct TreeNode {
  */
 class Codec {
 public:
-
     // Encodes a tree to a single string.
     string serialize(TreeNode* root) {
         if (root == nullptr) {
-            return "#";
-        } 
-
-        return to_string(root->val) + "," + serialize(root->left) + "," + serialize(root->right);
+            return "$";
+        }
+        return  to_string(root->val) + "," + serialize(root->left) + "," + serialize(root->right);
     }
 
     // Decodes your encoded data to tree.
     TreeNode* deserialize(string data) {
         if (data.size() <= 0) {
             return nullptr;
-        } 
+        }
 
-        int index = 0;
-        return deserializeHelper(data, index);
+        int curIndex = 0;
+        return deserializeHelper(data, curIndex);
     }
 private:
-    TreeNode *deserializeHelper(const string &data, int &index) {
-        if (index >= data.size()) {
+    TreeNode* deserializeHelper(const string &data, int &curIndex) {
+        if (curIndex >= data.size()) {
             return nullptr;
         }
 
-        while (index < data.size() && data[index] == ',') {
-            ++index;
+        while (curIndex < data.size() && data[curIndex] == ',') {
+            ++curIndex;
         }
 
-        if (data[index] == '#') {
-            ++index;
+        if (data[curIndex] == '$') {
+            ++curIndex;
             return nullptr;
         }
 
-        int num = 0;
-        int sign = 1;
-        if (data[index] == '-') {
-            sign = -1;
-            ++index;
+        string tmp;
+        while (curIndex < data.size() && (isdigit(data[curIndex]) || data[curIndex] == '-')) {
+            tmp += data[curIndex];
+            ++curIndex;
         }
 
-        while (index < data.size() && isdigit(data[index])) {
-            num = num * 10 + data[index] - '0';
-            ++index;
-        }
+        TreeNode * res = new TreeNode(stoi(tmp));
+        res->left = deserializeHelper(data, curIndex);
+        res->right = deserializeHelper(data, curIndex);
 
-        num *= sign;
-
-        auto leftNode = deserializeHelper(data, index);
-        auto rightNode = deserializeHelper(data, index);
-
-        auto node = new TreeNode(num);
-        node->left = leftNode;
-        node->right = rightNode;
-
-        return node;
+        return res;
     }
 };
 
