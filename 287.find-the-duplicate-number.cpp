@@ -1,4 +1,5 @@
 #include<vector>
+#include<iostream>
 
 using namespace std;
 
@@ -12,36 +13,54 @@ using namespace std;
 class Solution {
 public:
     int findDuplicate(vector<int>& nums) {
-        if (nums.size() <= 0) {
+        if (nums.size() <= 1) {
             return -1;
-        } 
-
-        int index = findNextIndex(nums, 0), count = nums.size();
-        while (count > 0) {
-            if (nums[index] != index + 1) {
-                int targetIndex = nums[index] - 1;
-                if (nums[targetIndex] == nums[index]) {
-                    return nums[index];
-                } else {
-                    swap(nums[targetIndex], nums[index]);
-                }
-            } else {
-                index = findNextIndex(nums, index);
-            }
-            --count;
         }
 
+        int index = 0;
+        while (index = findNextStartIndex(nums, index), index >= 0) {
+            int tmpVal = nums[index];
+            nums[index] = -1;
+            while (tmpVal != -1) {
+                if (nums[tmpVal - 1] == -1) {
+                    nums[tmpVal - 1] = tmpVal;
+                    tmpVal = -1;
+                    break;
+                } else if (nums[tmpVal - 1] == tmpVal) {
+                    return tmpVal;
+                }
+                
+                int tmp = nums[tmpVal - 1];
+                nums[tmpVal - 1] = tmpVal;
+                tmpVal = tmp;
+            } 
+        } 
+        
         return -1;
     }
 private:
-    int findNextIndex(const vector<int>& nums, int sta) {
-        for (int i = sta; i < nums.size(); ++i) {
-            if (nums[i] != i + 1) {
-                return i;
+    int findNextStartIndex(const vector<int>& nums, int sta) {
+        while (sta < nums.size()) {
+            if (nums[sta] == -1) {
+                ++sta;
+                continue;
+            } else if (nums[sta] == sta + 1) {
+                ++sta;
+                continue;
+            } else {
+                return sta;
             }
         }
         return -1;
     }
+
 };
 // @lc code=end
 
+int main() {
+    vector<int> nums = {1, 3, 4, 2, 2};
+    Solution sol;
+
+    int res = sol.findDuplicate(nums);
+    std::cout << res << std::endl;
+}
