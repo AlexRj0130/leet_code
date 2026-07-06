@@ -12,15 +12,29 @@ using namespace std;
 class Solution {
 public:
     void moveZeroes(vector<int>& nums) {
-        vector<int> res(nums.size(), 0);
-        int count = 0;
-        for (auto item : nums) {
-            if (item == 0) {
+        int firstZeroIndex = -1;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i] != 0) {
                 continue;
             }
-            res[count++] = item;
+            firstZeroIndex = i;
+            break;
         }
-        nums.swap(res);
+        if (firstZeroIndex == -1) {
+            return;
+        }
+
+        for (int i = 0; i < nums.size(); ++i) {
+            if (nums[i] == 0) {
+                continue;
+            }
+            if (firstZeroIndex >= i) {
+                continue;
+            }
+            nums[firstZeroIndex] = nums[i];
+            nums[i] = 0;
+            ++firstZeroIndex;
+        }
     }
 private:
 };
