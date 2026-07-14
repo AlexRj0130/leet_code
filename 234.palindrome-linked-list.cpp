@@ -28,64 +28,75 @@ public:
     bool isPalindrome(ListNode* head) {
         if (head == nullptr) {
             return false;
-        } 
-
-        if (head->next == nullptr) {
-            return true;
         }
 
-        auto pMid = findMid(head);
-        auto pRearHead = pMid->next;
-        pMid->next = nullptr;
+        ListNode *leftLast = findSplitNode(head);
+        ListNode *rightFirst = nullptr;
+        if (leftLast == nullptr) {
+            return false;
+        }
+        rightFirst = leftLast->next;
+        leftLast->next = nullptr;
+        rightFirst = reverseList(rightFirst);
 
-        ListNode * pRead1 = head, *pRead2 = reverse(pRearHead);
-        while (pRead1 != nullptr && pRead2 != nullptr) {
-            if (pRead1->val != pRead2->val) {
+        ListNode *left = head, *right = rightFirst;
+        while (left != nullptr && right!= nullptr) {
+            if (left->val != right->val) {
                 return false;
             }
-            pRead1 = pRead1->next;
-            pRead2 = pRead2->next;
+
+            left = left->next;
+            right = right->next;
         }
 
         return true;
     }
 private:
-    ListNode* reverse(ListNode *head) {
-        if (head == nullptr || head->next == nullptr) {
-            return head;
+    ListNode * findSplitNode(ListNode* head) {
+        if (head == nullptr) {
+            return nullptr;
         }
 
-        ListNode *res = head;
+        ListNode * pSlow = head;
+        ListNode * pFast = head;
+        while (pFast->next != nullptr && pFast->next->next != nullptr) {
+            pFast = pFast->next->next;
+            pSlow = pSlow->next;
+        }
+        
+        return pSlow;
+    }
+
+    ListNode * reverseList(ListNode* head) {
+        if (head == nullptr) {
+            return nullptr;
+        }
+
+        ListNode * res = head; 
         head = head->next;
         res->next = nullptr;
+
         while (head != nullptr) {
-            auto tmp = head;
-            head = head->next;
-            tmp->next = res;
-            res = tmp;
+            auto tmp = head->next;
+            head->next = res;
+            res = head;
+            head = tmp;
         }
 
         return res;
     }
-
-    ListNode * findMid(ListNode *head) {
-        ListNode *pSlow = head, *pFast = head;
-        while (pSlow != nullptr && pFast != nullptr && 
-            pFast->next != nullptr && pFast->next->next != nullptr) {
-                pSlow = pSlow->next;
-                pFast = pFast->next->next;
-        }
-        return pSlow;
-    }
-
 };
 // @lc code=end
 
 int main() {
+    // ListNode * head = new ListNode(1, 
+    //     new ListNode(2, 
+    //         new ListNode(2, 
+    //             new ListNode(1))));
+
     ListNode * head = new ListNode(1, 
-        new ListNode(2, 
-            new ListNode(2, 
-                new ListNode(1))));
+        new ListNode(2));
+
     Solution sol;
     sol.isPalindrome(head);
     return 0;
