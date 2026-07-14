@@ -13,47 +13,42 @@ using namespace std;
 class Solution {
 public:
     int findDuplicate(vector<int>& nums) {
-        if (nums.size() <= 1) {
-            return -1;
-        }
-
-        int index = 0;
-        while (index = findNextStartIndex(nums, index), index >= 0) {
-            int tmpVal = nums[index];
-            nums[index] = -1;
-            while (tmpVal != -1) {
-                if (nums[tmpVal - 1] == -1) {
-                    nums[tmpVal - 1] = tmpVal;
-                    tmpVal = -1;
-                    break;
-                } else if (nums[tmpVal - 1] == tmpVal) {
-                    return tmpVal;
+        for (int i = 0; i < nums.size(); ++i) {
+            int index = findNextWrongIndex(nums, i);
+            int num = nums[index];
+            nums[index] = 0;
+            int numTargetIndex = num2Index(num);
+            while (nums[numTargetIndex] != 0) {
+                if (nums[numTargetIndex] == num) {
+                    return num;
                 }
-                
-                int tmp = nums[tmpVal - 1];
-                nums[tmpVal - 1] = tmpVal;
-                tmpVal = tmp;
-            } 
-        } 
-        
-        return -1;
+
+                int tmp = nums[numTargetIndex];
+                nums[numTargetIndex] = num;
+                num = tmp;
+                numTargetIndex = num2Index(num);
+            }
+            nums[numTargetIndex] = num;
+        }
+        return 0;
     }
 private:
-    int findNextStartIndex(const vector<int>& nums, int sta) {
-        while (sta < nums.size()) {
-            if (nums[sta] == -1) {
-                ++sta;
-                continue;
-            } else if (nums[sta] == sta + 1) {
-                ++sta;
-                continue;
-            } else {
-                return sta;
+    int findNextWrongIndex(const vector<int>& nums, int sta) {
+        for (int i = sta; i < nums.size(); ++i) {
+            if (nums[i] != index2Num(i)) {
+                return i;
             }
         }
         return -1;
     }
 
+    int index2Num(int index) {
+        return index + 1;
+    }
+
+    int num2Index(int num) {
+        return num - 1;
+    }
 };
 // @lc code=end
 
