@@ -13,36 +13,30 @@ using namespace std;
 class Solution {
 public:
     vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-        if (k <= 0) {
-            return {};
-        } 
-
-        if (k == 1) {
-            return nums;
-        }
-
+        deque<int> qWindow;
         vector<int> res;
-        deque<int> window;
         for (int i = 0; i < nums.size(); ++i) {
-            // 1.移除队列后部所有小于等于当前值的值。
-            while (!window.empty() && nums[window.back()] <= nums[i]) {
-                window.pop_back();
+            while ((!qWindow.empty()) && nums[qWindow.back()] <= nums[i]) {
+                qWindow.pop_back();
             }
-            window.push_back(i);
+            qWindow.push_back(i);
 
-            // 2.移除窗口外的值
-            while (!window.empty() && window.front() <= (i - k)) {
-                window.pop_front();
+            if (i < k - 1) {
+                continue;
             }
 
-            // 3.窗口达到大小时，记录窗口内的最大值
-            if (i >= k - 1) {
-                res.push_back(nums[window.front()]);
+            int leftIndex = i - k + 1;
+            while (qWindow.front() < leftIndex) {
+                qWindow.pop_front();
             }
+
+            res.push_back(nums[qWindow.front()]);
         }
 
         return res;
     }
+private:
+
 };
 // @lc code=end
 
