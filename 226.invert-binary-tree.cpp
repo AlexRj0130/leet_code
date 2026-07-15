@@ -30,12 +30,12 @@ public:
     TreeNode* invertTree(TreeNode* root) {
         if (root == nullptr) {
             return root;
-        } 
+        }
 
-        auto newLeft = invertTree(root->right);
-        auto newRight = invertTree(root->left);
-        root->left = newLeft;
-        root->right = newRight;
+        auto left = invertTree(root->left);
+        auto right = invertTree(root->right);
+        root->left = right;
+        root->right = left;
         return root;
     }
 };
