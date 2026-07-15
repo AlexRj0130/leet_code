@@ -12,21 +12,17 @@ using namespace std;
 class Solution {
 public:
     int majorityElement(vector<int>& nums) {
-        int target = 0, targetTimes = 0; 
-        for (int i = 0; i < nums.size(); ++i) {
-            if (targetTimes == 0) {
-                target = nums[i];
-                ++targetTimes;
+        int res = 0, count = 0;
+        for (auto item : nums) {
+            if (count == 0) {
+                res = item, ++count;
+            } else if (res == item) {
+                ++count;
             } else {
-                if (target == nums[i]) {
-                    ++targetTimes;
-                } else {
-                    --targetTimes;
-                }
+                --count;
             }
         }
-
-        return target;
+        return res;
     }
 };
 // @lc code=end
