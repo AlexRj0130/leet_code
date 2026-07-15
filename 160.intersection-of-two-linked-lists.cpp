@@ -1,3 +1,7 @@
+#include <algorithm>
+
+using namespace std;
+
 /*
  * @lc app=leetcode id=160 lang=cpp
  *
@@ -22,27 +26,21 @@ struct ListNode {
 class Solution {
 public:
     ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
-        if (headA == nullptr || headB == nullptr) {
-            return nullptr;
-        } 
-
         int sizeA = getListSize(headA);
         int sizeB = getListSize(headB);
         
-        auto pReadA = headA;
-        auto pReadB = headB;
-        if (sizeA > sizeB) {
-            pReadA = forwardSteps(pReadA, sizeA - sizeB);
-        } else {
-            pReadB = forwardSteps(pReadB, sizeB - sizeA);
-        }
+        auto head1 = sizeA >= sizeB ? headA : headB;
+        auto head2 = sizeA < sizeB ? headA : headB;
+        int sizeDiff = max(sizeA - sizeB, sizeB - sizeA);
 
-        while (pReadA != nullptr && pReadB != nullptr) {
-            if (pReadA == pReadB) {
-                return pReadA;
+        head1 = moveTargetStep(head1, sizeDiff);
+
+        while (head1 != nullptr && head2 != nullptr) {
+            if (head1 == head2) {
+                return head1;
             }
-            pReadA = pReadA->next;
-            pReadB = pReadB->next;
+            head1 = head1->next;
+            head2 = head2->next;
         }
 
         return nullptr;
@@ -50,22 +48,19 @@ public:
 
 private:
     int getListSize(ListNode *head) {
-        int size = 0;
-        while (head != nullptr) {
-            ++size;
-            head = head->next;
+        int res = 0;
+        ListNode * read = head;
+        while (read != nullptr) {
+            ++res;
+            read = read->next;
         }
-
-        return size;
+        return res;
     }
 
-    ListNode *forwardSteps(ListNode *head, int steps) {
-        while (steps > 0) {
-            if (head == nullptr) {
-                return head;
-            }
+    ListNode * moveTargetStep(ListNode * head, int target) {
+        while (target > 0 && head != nullptr) {
+            --target;
             head = head->next;
-            --steps;
         }
         return head;
     }
