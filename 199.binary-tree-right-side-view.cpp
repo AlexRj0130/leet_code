@@ -30,56 +30,43 @@ struct TreeNode {
  * };
  */
 
-struct TreeNodeWithDepth {
-    TreeNode *node;
-    int depth;
-    TreeNodeWithDepth(TreeNode *node, int depth) : node(node), depth(depth) {} 
-};
-
 class Solution {
 public:
     vector<int> rightSideView(TreeNode* root) {
         if (root == nullptr) {
             return {};
-        } 
+        }
+
+        queue<pair<TreeNode *, int> *> que;
+        que.push(new pair<TreeNode *, int>{root, 0});
 
         vector<int> res;
-        TreeNodeWithDepth preNode = {root, 0};
-        nodeQueuePush(root, 0);
+        pair<TreeNode *, int> *pre = nullptr;
 
-        while (!nodeQueue.empty()) {
-            auto node = nodeQueue.front();
-            nodeQueue.pop();
+        while (!que.empty()) {
+            auto item = que.front();
+            que.pop();
 
-            if (node.depth != preNode.depth) {
-                res.push_back(preNode.node->val);
+            if (pre != nullptr && item->second != pre->second) {
+                res.push_back(pre->first->val);
             }
+            pre = item;
 
-            nodeQueuePush(node.node, node.depth);
-            preNode = node;
+            if (item->first->left != nullptr) {
+                que.push(new pair<TreeNode *, int>{item->first->left, item->second + 1});
+            }
+            
+            if (item->first->right != nullptr) {
+                que.push(new pair<TreeNode *, int>{item->first->right, item->second + 1});
+            }
         }
 
-        res.push_back(preNode.node->val);
-        
+        if (pre != nullptr) {
+            res.push_back(pre->first->val);
+        }
+
         return res;
     }
-private:
-    void nodeQueuePush(TreeNode *node, int nodeDepth) {
-        if (node == nullptr) {
-            return;
-        }
-
-        if (node->left != nullptr) {
-            nodeQueue.push({node->left, nodeDepth + 1});
-        }
-
-        if (node->right != nullptr) {
-            nodeQueue.push({node->right, nodeDepth + 1});
-        }
-    }
-
-private:
-    queue<TreeNodeWithDepth> nodeQueue;
 };
 // @lc code=end
 
