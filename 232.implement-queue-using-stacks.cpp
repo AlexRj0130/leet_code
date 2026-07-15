@@ -12,43 +12,43 @@ using namespace std;
 class MyQueue {
 public:
     MyQueue() {
-        inStack = stack<int>(); 
-        outStack = stack<int>(); 
+        sPush = stack<int>();
+        sPop = stack<int>();
     }
     
     void push(int x) {
-        while(!outStack.empty()) {
-            inStack.push(outStack.top());
-            outStack.pop();
+        while (!sPop.empty()) {
+            sPush.push(sPop.top());
+            sPop.pop();
         }
-        inStack.push(x);
+        sPush.push(x);
     }
     
     int pop() {
-        while(!inStack.empty()) {
-            outStack.push(inStack.top());
-            inStack.pop();
+        while (!sPush.empty()) {
+            sPop.push(sPush.top());
+            sPush.pop();
         }
-
-        int res = outStack.top();
-        outStack.pop();
+        int res = sPop.top();
+        sPop.pop();
         return res;
     }
     
     int peek() {
-        while(!inStack.empty()) {
-            outStack.push(inStack.top());
-            inStack.pop();
-        } 
-        return outStack.top();
+         while (!sPush.empty()) {
+            sPop.push(sPush.top());
+            sPush.pop();
+        }
+        int res = sPop.top();
+        return res;
     }
     
     bool empty() {
-        return inStack.empty() && outStack.empty(); 
+        return sPush.empty() && sPop.empty();
     }
 private:
-    stack<int> inStack;
-    stack<int> outStack;
+    stack<int> sPush;
+    stack<int> sPop;
 };
 
 /**
