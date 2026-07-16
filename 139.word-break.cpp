@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_set>
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -16,45 +17,43 @@ class Solution {
 public:
     bool wordBreak(string s, vector<string>& wordDict) {
         if (s.size() <= 0) {
-            return true;
+            return false;
         }
 
-        vector<bool> dp(s.size() + 1, false);
-        dp[0] = true; 
-
-        unordered_set<string> wordSet(wordDict.begin(), wordDict.end());
-
-        for (int i = 1; i <= s.size(); ++i) {
-            for (auto word : wordSet) {
-                if (word.size() > i) {
+        vector<bool> dp(s.size(), false);
+        for (int i = 0; i < s.size(); ++i) {
+            for (const auto & word: wordDict) {
+                int staIndex = i - word.size() + 1;
+                if (staIndex < 0) {
                     continue;
                 }
-
-                auto pos = i - word.size();
-                auto size = word.size();
-                auto subStr = s.substr(pos, size);
-                if (subStr != word) {
-                    continue;
+                auto tmp = s.substr(staIndex, word.size());
+                if (tmp == word) {
+                    if (staIndex <= 0) {
+                        dp[i] = true;
+                        break;
+                    } else if (dp[staIndex - 1]) {
+                        dp[i] = true;
+                        break;
+                    }
                 }
-
-                if (!dp[pos]) {
-                    continue;
-                }
-
-                dp[i] = true;
-                break;
             }
         }
 
-        return dp[s.size()];
+        return dp[s.size() - 1];
     } 
 };
 // @lc code=end
 
 int main() {
-    string str = "leetcode";
+    // string str = "leetcode";
+    // vector<string> dictWord{"leet", "code"};
+
+    string str = "code";
     vector<string> dictWord{"leet", "code"};
+
     Solution sol;
-    sol.wordBreak(str, dictWord);
+    auto res = sol.wordBreak(str, dictWord);
+    cout << res << endl;
     return 0;
 }
