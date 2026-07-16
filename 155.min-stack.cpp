@@ -9,40 +9,33 @@ using namespace std;
  */
 
 // @lc code=start
-struct MinStackElement {
-    int val;
-    int minVal;
-    MinStackElement(int val, int minVal) : val(val), minVal(minVal) {} 
-};
-
 class MinStack {
 public:
     MinStack() {
-        minStack = {}; 
+        valStack = stack<int>();
+        minValStack = stack<int>();
     }
     
     void push(int val) {
-        if (minStack.empty()) {
-            minStack.push(MinStackElement(val, val));
-        } else {
-            auto preMin = getMin();
-            minStack.push(MinStackElement(val, min(val, preMin)));
-        }
+        valStack.push(val);
+        minValStack.push(minValStack.empty() ? val : (minValStack.top() < val ? minValStack.top() : val));
     }
     
     void pop() {
-        minStack.pop(); 
+        valStack.pop();
+        minValStack.pop();
     }
     
     int top() {
-        return minStack.top().val; 
+        return valStack.top();
     }
     
     int getMin() {
-        return minStack.top().minVal; 
+        return minValStack.top();
     }
 private:
-    stack<MinStackElement> minStack;
+    stack<int> valStack;
+    stack<int> minValStack;
 };
 
 /**
