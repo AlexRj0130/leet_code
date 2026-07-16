@@ -1,5 +1,5 @@
 #include <vector>
-#include <map>
+#include <set>
 
 using namespace std;
 
@@ -13,27 +13,28 @@ using namespace std;
 class Solution {
 public:
     int longestConsecutive(vector<int>& nums) {
-        int res = 0;
-        unordered_map<int, bool> numsMap;
-        for (int i = 0; i < nums.size(); ++i) {
-            numsMap.insert({nums[i], true});
+        if (nums.size() <= 0) {
+            return nums.size();
         }
 
-        for (int i = 0; i < nums.size(); ++i) {
-            int numLeft = nums[i] - 1;
-            int numRight = nums[i] + 1;
-            int resTmp = 1;
+        set<int> numSet; 
+        int res = 1;
+        for (auto num : nums) {
+            numSet.insert(num);
+        }
 
-            while(numsMap.contains(numLeft)) {
-                numsMap.erase(numLeft);
+        for (auto num : nums) {
+            int resTmp = 1;
+            int numLeft = num;
+            while (numSet.contains(--numLeft)) {
+                numSet.erase(numLeft);
                 ++resTmp;
-                --numLeft;
             }
 
-            while (numsMap.contains(numRight)) {
-                numsMap.erase(numRight);
+            int numRight = num;
+            while (numSet.contains(++numRight)) {
+                numSet.erase(numRight);
                 ++resTmp;
-                ++numRight;
             }
 
             res = max(res, resTmp);
