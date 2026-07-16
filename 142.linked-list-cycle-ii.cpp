@@ -24,24 +24,24 @@ public:
     ListNode *detectCycle(ListNode *head) {
         if (head == nullptr || head->next == nullptr) {
             return nullptr;
-        } 
+        }
 
-        ListNode *pSlow = head, *pFast = head;
-        do {
-            pSlow = pSlow->next;
+        ListNode * pFast = head->next->next, * pSlow = head->next;
+        while (pFast != nullptr && pFast->next != nullptr && pFast != pSlow) {
             pFast = pFast->next->next;
-        } while (pSlow != nullptr
-            && pFast != nullptr && pFast->next != nullptr && pSlow != pFast);
-
-        if (pSlow != pFast) {
+            pSlow = pSlow->next;
+        }
+       
+        if (pFast != pSlow) {
             return nullptr;
         }
 
         pSlow = head;
-        while (pSlow != pFast) {
-            pSlow = pSlow->next;
+        while (pFast != pSlow) {
             pFast = pFast->next;
+            pSlow = pSlow->next;
         }
+
         return pSlow;
     }
 };
