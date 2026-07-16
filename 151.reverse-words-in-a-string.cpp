@@ -1,5 +1,5 @@
 #include <string>
-#include <stack>
+#include <vector>
 
 using namespace std;
 
@@ -13,38 +13,43 @@ using namespace std;
 class Solution {
 public:
     string reverseWords(string s) {
-        stack<string> strStack; 
-        string word;
-        for (int i = 0; i < s.size(); ++i) {
-            auto ch = s[i];
-            if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')) {
-                word += ch;
-                continue;
-            }
-
-            if (!word.empty()) {
-                strStack.push(word);
-                word = "";
-            }
-        }
-
-        if (!word.empty()) {
-            strStack.push(word);
-            word = "";
-        }
-
-        string res;
-        while (!strStack.empty()) {
-            auto item = strStack.top();
-            strStack.pop();
-            if (res.empty()) {
-                res = item;
+        string str;
+        auto vStr = split(s);
+        while (!vStr.empty()) {
+            if (str.empty()) {
+                str = vStr.back();
             } else {
-                res += ' ';
-                res += item;
+                str += " ";
+                str += vStr.back();
             }
+            vStr.pop_back();
         }
 
+        return str;
+    }
+private:
+    vector<string> split(const string &s) {
+        if (s.size() <= 0) {
+            return {};
+        }
+
+        vector<string> res;
+        string tmp;
+        for (auto item : s) {
+            if (isspace(item)) {
+                if (!tmp.empty()) {
+                    res.push_back(tmp);
+                    tmp = "";
+                }
+            } else {
+                tmp += item;
+            }
+        }
+        
+        if (!tmp.empty()) {
+            res.push_back(tmp);
+            tmp = "";
+        }
         return res;
     }
 };
