@@ -24,28 +24,17 @@ struct ListNode {
 class Solution {
 public:
     bool hasCycle(ListNode *head) {
-        if (head==nullptr || head->next==nullptr) {
+        if (head == nullptr || head->next == nullptr) {
             return false;
-        } 
+        }
 
-        ListNode *pFast = head->next, *pSlow = head; 
-        while (pFast != nullptr && pSlow != nullptr) {
-            if (pFast == pSlow) {
-                return true;
-            }
-
-            if (pFast->next == nullptr || pFast->next->next == nullptr) {
-                return false;
-            }
+        ListNode * pFast = head->next->next, *pSlow = head->next;
+        while (pFast != nullptr && pFast->next != nullptr && pFast != pSlow) {
             pFast = pFast->next->next;
-
-            if (pSlow->next == nullptr) {
-                return false;
-            }
             pSlow = pSlow->next;
         }
 
-        return false;
+        return pFast == pSlow;
     }
 };
 // @lc code=end
